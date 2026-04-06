@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
   return (
@@ -12,16 +13,14 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* LoginForm will be added here */}
-      <div className="space-y-4">
-        <div className="h-11 rounded-full border border-[#E4E4E7] bg-[#FAFAFA] animate-pulse" />
-        <div className="h-11 rounded-full border border-[#E4E4E7] bg-[#FAFAFA] animate-pulse" />
-        <div className="h-12 rounded-full bg-[#06E09B]/30 animate-pulse" />
-      </div>
+      <LoginForm />
 
       <p className="text-sm text-center mt-6 text-[#71717A]">
         Não tem conta?{" "}
-        <Link href="/register" className="text-[#06E09B] hover:underline font-medium">
+        <Link
+          href="/register"
+          className="text-[#06E09B] hover:underline font-medium"
+        >
           Criar conta
         </Link>
       </p>

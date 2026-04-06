@@ -5,7 +5,26 @@
       "Bash(npm install:*)",
       "Bash(mkdir -p components/ui components/auth components/games components/quests components/tags components/layout components/dashboard)",
       "Bash(mkdir -p actions validations stores schema lib)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(psql --version)",
+      "Bash(pg_isready)",
+      "Bash(psql -U mart1 -d postgres -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD=\"\" psql -U mart1 -d postgres -w -c \"SELECT 1;\")",
+      "Bash(echo \"EXIT_CODE: $?\")",
+      "Bash(psql -U mart1 -d postgres -w -c \"SHOW hba_file;\")",
+      "Read(//c/Program Files/PostgreSQL/**)",
+      "Read(//c/Program Files/**)",
+      "Bash(PGPASSWORD=\"mart1\" psql -U mart1 -d postgres -w -c \"SELECT 1 as test;\")",
+      "Bash(PGPASSWORD=\"postgres\" psql -U mart1 -d postgres -w -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD=\"123456\" psql -U mart1 -d postgres -w -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD=\"postgre\" psql -U mart1 -d postgres -w -c \"SELECT 1 as test;\")",
+      "Bash(PGPASSWORD=\"postgre\" psql -U postgres -d postgres -w -c \"SELECT 1 as test;\")",
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d postgres -w -c \"SELECT 1 as test;\")",
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d postgres -w -c \"CREATE DATABASE savepoint;\")",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\dt\")",
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \":*)",
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\di\")"
     ]
   }
 }
