@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(npm install:*)",
+      "Bash(mkdir -p components/ui components/auth components/games components/quests components/tags components/layout components/dashboard)",
+      "Bash(mkdir -p actions validations stores schema lib)",
+      "Bash(npx next:*)"
     ]
   }
 }
