@@ -5,8 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/stores/useAppStore";
-import { Header } from "@/components/layout/Header";
+import { AppShell } from "@/components/layout/AppShell";
 import { TagPill } from "@/components/tags/TagPill";
+import { TagPicker } from "@/components/tags/TagPicker";
+import { TagManager } from "@/components/tags/TagManager";
 import { ActiveQuestPanel } from "@/components/quests/ActiveQuestPanel";
 import { QuestList } from "@/components/quests/QuestList";
 import { AddQuestModal } from "@/components/quests/AddQuestModal";
@@ -52,10 +54,17 @@ export function GameDetailClient({
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [isEditGameOpen, setIsEditGameOpen] = useState(false);
   const [isDeleteGameOpen, setIsDeleteGameOpen] = useState(false);
+  const [isTagPickerOpen, setIsTagPickerOpen] = useState(false);
+
+  const isTagManagerOpen = useAppStore((s) => s.isTagManagerOpen);
+  const closeTagManager = useAppStore((s) => s.closeTagManager);
+  const setTags = useAppStore((s) => s.setTags);
+  const allTags = useAppStore((s) => s.tags);
 
   useEffect(() => {
     setUser(initialUser);
-  }, [initialUser, setUser]);
+    setTags(initialTags);
+  }, [initialUser, initialTags, setUser, setTags]);
 
   const activeQuest = useMemo(
     () => quests.find((q) => q.status === "active") || null,
@@ -136,14 +145,12 @@ export function GameDetailClient({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header
-        username={user?.username || initialUser.username}
-        goldBalance={user?.goldBalance ?? initialUser.goldBalance}
-        onOpenTagManager={openTagManager}
-      />
-
-      <main className="flex-1 p-6 md:p-8 max-w-5xl mx-auto w-full">
+    <AppShell
+      username={user?.username || initialUser.username}
+      goldBalance={user?.goldBalance ?? initialUser.goldBalance}
+      onOpenTagManager={openTagManager}
+    >
+      <div className="p-6 md:p-8 max-w-5xl mx-auto w-full">
         {/* Back link + actions */}
         <div className="flex items-center justify-between mb-6">
           <Link
@@ -199,10 +206,18 @@ export function GameDetailClient({
         </div>
 
         {/* Tags + Favorite */}
-        <div className="flex items-center gap-3 flex-wrap mb-6">
+        <div className="flex items-center gap-3 flex-wrap mb-4">
           {gameTags.map((tag) => (
             <TagPill key={tag.id} tag={tag} size="md" />
           ))}
+          {gameTags.length < 5 && (
+            <button
+              onClick={() => setIsTagPickerOpen(!isTagPickerOpen)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-[#E4E4E7] text-xs text-[#71717A] hover:border-[#06E09B] hover:text-[#06E09B] transition-colors cursor-pointer"
+            >
+              + Tag
+            </button>
+          )}
           <button
             onClick={handleToggleFavorite}
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#E4E4E7] text-xs font-medium transition-all cursor-pointer hover:border-[#F59E0B]"
@@ -219,6 +234,29 @@ export function GameDetailClient({
             {game.isFavorite ? "Favoritado" : "Favoritar"}
           </button>
         </div>
+
+        {/* Tag Picker */}
+        {isTagPickerOpen && (
+          <div className="mb-6 p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium text-[#18181B]">Selecionar Tags</h4>
+              <button
+                onClick={() => setIsTagPickerOpen(false)}
+                className="text-[#71717A] hover:text-[#18181B] cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <TagPicker
+              allTags={allTags}
+              assignedTags={gameTags}
+              gameId={game.id}
+              onTagsChanged={setGameTags}
+            />
+          </div>
+        )}
 
         {/* Stats + Active quest */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6 mb-8">
@@ -266,7 +304,7 @@ export function GameDetailClient({
           }
           onAddQuest={() => setIsAddQuestOpen(true)}
         />
-      </main>
+      </div>
 
       {/* Modals */}
       <AddQuestModal
@@ -295,6 +333,10 @@ export function GameDetailClient({
           handleGameDeleted();
         }}
       />
-    </div>
+      <TagManager
+        isOpen={isTagManagerOpen}
+        onClose={closeTagManager}
+      />
+    </AppShell>
   );
 }

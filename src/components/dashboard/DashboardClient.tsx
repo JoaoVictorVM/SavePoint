@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
-import { Header } from "@/components/layout/Header";
+import { AppShell } from "@/components/layout/AppShell";
 import { SearchBar } from "@/components/dashboard/SearchBar";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { GameGrid } from "@/components/games/GameGrid";
@@ -10,6 +10,7 @@ import { EmptyGamesState } from "@/components/games/EmptyGamesState";
 import { AddGameModal } from "@/components/games/AddGameModal";
 import { EditGameModal } from "@/components/games/EditGameModal";
 import { DeleteGameDialog } from "@/components/games/DeleteGameDialog";
+import { TagManager } from "@/components/tags/TagManager";
 import { Button } from "@/components/ui/Button";
 import { toggleFavorite } from "@/actions/games";
 import toast from "react-hot-toast";
@@ -102,14 +103,12 @@ export function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header
-        username={user?.username || initialUser.username}
-        goldBalance={user?.goldBalance ?? initialUser.goldBalance}
-        onOpenTagManager={openTagManager}
-      />
-
-      <main className="flex-1 p-6 md:p-8">
+    <AppShell
+      username={user?.username || initialUser.username}
+      goldBalance={user?.goldBalance ?? initialUser.goldBalance}
+      onOpenTagManager={openTagManager}
+    >
+      <div className="p-6 md:p-8">
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
           <SearchBar />
@@ -139,7 +138,7 @@ export function DashboardClient({
             onClearFilters={clearAllFilters}
           />
         )}
-      </main>
+      </div>
 
       {/* Modals */}
       <AddGameModal
@@ -153,6 +152,10 @@ export function DashboardClient({
         questCount={0}
         onClose={() => setDeletingGameId(null)}
       />
-    </div>
+      <TagManager
+        isOpen={isTagManagerOpen}
+        onClose={closeTagManager}
+      />
+    </AppShell>
   );
 }
