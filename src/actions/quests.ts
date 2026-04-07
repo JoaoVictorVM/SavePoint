@@ -1,14 +1,15 @@
 "use server";
 
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { games } from "@/schema/games";
 import { quests } from "@/schema/quests";
 import { users } from "@/schema/users";
 import { getSession, updateSessionGold } from "@/lib/session";
-import { CreateQuestSchema, UpdateQuestSchema, UpdateProgressSchema } from "@/validations/quests";
+import { CreateQuestSchema, UpdateQuestSchema } from "@/validations/quests";
 import type { ActionResult } from "@/lib/types";
 import type { Quest } from "@/schema/quests";
+import type { Game } from "@/schema/games";
 
 async function requireAuth() {
   const session = await getSession();
@@ -16,25 +17,14 @@ async function requireAuth() {
   return session;
 }
 
-async function verifyGameOwnership(gameId: string, userId: string) {
-  const [game] = await db
-    .select({ id: games.id })
-    .from(games)
-    .where(and(eq(games.id, gameId), eq(games.userId, userId)))
-    .limit(1);
-  return game;
-}
-
 async function verifyQuestOwnership(questId: string, userId: string) {
   const [quest] = await db
     .select({
       id: quests.id,
       gameId: quests.gameId,
-      status: quests.status,
-      progress: quests.progress,
-      progressMax: quests.progressMax,
-      goldReward: quests.goldReward,
+      completed: quests.completed,
       title: quests.title,
+      description: quests.description,
     })
     .from(quests)
     .innerJoin(games, eq(quests.gameId, games.id))
@@ -43,34 +33,53 @@ async function verifyQuestOwnership(questId: string, userId: string) {
   return quest;
 }
 
-export async function getQuestsForGame(gameId: string): Promise<Quest[]> {
-  const session = await requireAuth();
-  const game = await verifyGameOwnership(gameId, session.id);
-  if (!game) return [];
+export type QuestWithGame = Quest & {
+  gameTitle: string;
+};
 
-  return db
-    .select()
+export type QuestsGroupedByGame = {
+  game: Pick<Game, "id" | "title">;
+  quests: Quest[];
+};
+
+export async function getQuestsGroupedByGame(): Promise<QuestsGroupedByGame[]> {
+  const session = await requireAuth();
+
+  const rows = await db
+    .select({
+      quest: quests,
+      gameTitle: games.title,
+    })
     .from(quests)
-    .where(eq(quests.gameId, gameId))
-    .orderBy(
-      sql`CASE ${quests.status} WHEN 'active' THEN 0 WHEN 'pending' THEN 1 WHEN 'completed' THEN 2 END`,
-      quests.createdAt
-    );
+    .innerJoin(games, eq(quests.gameId, games.id))
+    .where(eq(games.userId, session.id))
+    .orderBy(games.title, desc(quests.createdAt));
+
+  const groupMap = new Map<string, QuestsGroupedByGame>();
+
+  for (const row of rows) {
+    const gameId = row.quest.gameId;
+    if (!groupMap.has(gameId)) {
+      groupMap.set(gameId, {
+        game: { id: gameId, title: row.gameTitle },
+        quests: [],
+      });
+    }
+    groupMap.get(gameId)!.quests.push(row.quest);
+  }
+
+  return Array.from(groupMap.values());
 }
 
 export async function createQuest(
-  gameId: string,
   formData: FormData
 ): Promise<ActionResult<Quest>> {
   const session = await requireAuth();
-  const game = await verifyGameOwnership(gameId, session.id);
-  if (!game) return { success: false, error: "Jogo não encontrado" };
 
   const raw = {
+    gameId: formData.get("gameId") as string,
     title: formData.get("title") as string,
     description: (formData.get("description") as string) || undefined,
-    progressMax: Number(formData.get("progressMax")),
-    goldReward: Number(formData.get("goldReward")),
   };
 
   const parsed = CreateQuestSchema.safeParse(raw);
@@ -84,16 +93,21 @@ export async function createQuest(
     return { success: false, error: "Dados inválidos", fieldErrors };
   }
 
+  // Verify game ownership
+  const [game] = await db
+    .select({ id: games.id })
+    .from(games)
+    .where(and(eq(games.id, parsed.data.gameId), eq(games.userId, session.id)))
+    .limit(1);
+
+  if (!game) return { success: false, error: "Jogo não encontrado" };
+
   const [newQuest] = await db
     .insert(quests)
     .values({
-      gameId,
+      gameId: parsed.data.gameId,
       title: parsed.data.title,
       description: parsed.data.description || null,
-      progressMax: parsed.data.progressMax,
-      goldReward: String(parsed.data.goldReward),
-      status: "pending",
-      progress: 0,
     })
     .returning();
 
@@ -108,20 +122,14 @@ export async function updateQuest(
   const quest = await verifyQuestOwnership(questId, session.id);
   if (!quest) return { success: false, error: "Quest não encontrada" };
 
-  if (quest.status === "completed") {
-    return { success: false, error: "Quest completa não pode ser editada" };
+  if (quest.completed) {
+    return { success: false, error: "Quest concluída não pode ser editada" };
   }
 
-  const raw: Record<string, unknown> = {};
-  const title = formData.get("title") as string | null;
-  const description = formData.get("description") as string | null;
-  const progressMax = formData.get("progressMax");
-  const goldReward = formData.get("goldReward");
-
-  if (title !== null) raw.title = title;
-  if (description !== null) raw.description = description || undefined;
-  if (progressMax !== null) raw.progressMax = Number(progressMax);
-  if (goldReward !== null) raw.goldReward = Number(goldReward);
+  const raw = {
+    title: formData.get("title") as string,
+    description: (formData.get("description") as string) || undefined,
+  };
 
   const parsed = UpdateQuestSchema.safeParse(raw);
   if (!parsed.success) {
@@ -134,153 +142,48 @@ export async function updateQuest(
     return { success: false, error: "Dados inválidos", fieldErrors };
   }
 
-  // Validate progressMax not below current progress
-  if (parsed.data.progressMax !== undefined && parsed.data.progressMax < quest.progress) {
-    return {
-      success: false,
-      error: `Máximo não pode ser menor que o progresso atual (${quest.progress})`,
-      fieldErrors: { progressMax: [`Máximo não pode ser menor que o progresso atual (${quest.progress})`] },
-    };
-  }
-
-  const updateData: Record<string, unknown> = { ...parsed.data, updatedAt: new Date() };
-  if (parsed.data.goldReward !== undefined) {
-    updateData.goldReward = String(parsed.data.goldReward);
-  }
-
   const [updated] = await db
     .update(quests)
-    .set(updateData)
+    .set({
+      title: parsed.data.title,
+      description: parsed.data.description || null,
+      updatedAt: new Date(),
+    })
     .where(eq(quests.id, questId))
     .returning();
 
   return { success: true, data: updated };
 }
 
-export async function activateQuest(
+export async function toggleQuestComplete(
   questId: string
-): Promise<ActionResult<Quest>> {
+): Promise<ActionResult<{ quest: Quest; newGoldBalance: number }>> {
   const session = await requireAuth();
   const quest = await verifyQuestOwnership(questId, session.id);
   if (!quest) return { success: false, error: "Quest não encontrada" };
 
-  if (quest.status === "completed") {
-    return { success: false, error: "Quest já está completa, não pode ser ativada" };
-  }
-
-  // Transaction: deactivate current active + activate this one
-  const result = await db.transaction(async (tx) => {
-    // Deactivate any active quest for this game
-    await tx
-      .update(quests)
-      .set({ status: "pending", updatedAt: new Date() })
-      .where(and(eq(quests.gameId, quest.gameId), eq(quests.status, "active")));
-
-    // Activate this quest
-    const [activated] = await tx
-      .update(quests)
-      .set({ status: "active", updatedAt: new Date() })
-      .where(eq(quests.id, questId))
-      .returning();
-
-    return activated;
-  });
-
-  return { success: true, data: result };
-}
-
-export async function deactivateQuest(
-  questId: string
-): Promise<ActionResult<Quest>> {
-  const session = await requireAuth();
-  const quest = await verifyQuestOwnership(questId, session.id);
-  if (!quest) return { success: false, error: "Quest não encontrada" };
-
-  if (quest.status !== "active") {
-    return { success: false, error: "Quest não está ativa" };
-  }
-
-  const [updated] = await db
-    .update(quests)
-    .set({ status: "pending", updatedAt: new Date() })
-    .where(eq(quests.id, questId))
-    .returning();
-
-  return { success: true, data: updated };
-}
-
-export async function updateQuestProgress(
-  questId: string,
-  newProgress: number
-): Promise<ActionResult<Quest>> {
-  const session = await requireAuth();
-  const quest = await verifyQuestOwnership(questId, session.id);
-  if (!quest) return { success: false, error: "Quest não encontrada" };
-
-  if (quest.status !== "active") {
-    return { success: false, error: "Quest não está ativa" };
-  }
-
-  const parsed = UpdateProgressSchema.safeParse({ progress: newProgress });
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
-  }
-
-  if (newProgress <= quest.progress && newProgress !== 0) {
-    return { success: false, error: "Progresso não pode diminuir" };
-  }
-
-  if (newProgress > quest.progressMax) {
-    return { success: false, error: "Progresso excede o máximo" };
-  }
-
-  const [updated] = await db
-    .update(quests)
-    .set({ progress: newProgress, updatedAt: new Date() })
-    .where(eq(quests.id, questId))
-    .returning();
-
-  return { success: true, data: updated };
-}
-
-export async function completeQuest(
-  questId: string
-): Promise<ActionResult<{ quest: Quest; newGoldBalance: number; goldReward: number }>> {
-  const session = await requireAuth();
-  const quest = await verifyQuestOwnership(questId, session.id);
-  if (!quest) return { success: false, error: "Quest não encontrada" };
-
-  if (quest.status !== "active") {
-    return { success: false, error: "Quest não está ativa" };
-  }
-
-  const goldReward = Number(quest.goldReward);
+  const wasCompleted = quest.completed;
+  const goldDelta = wasCompleted ? -1 : 1;
 
   const result = await db.transaction(async (tx) => {
-    // Complete the quest
-    const [completedQuest] = await tx
+    const [updatedQuest] = await tx
       .update(quests)
       .set({
-        status: "completed",
-        progress: quest.progressMax,
-        completedAt: new Date(),
+        completed: !wasCompleted,
+        completedAt: wasCompleted ? null : new Date(),
         updatedAt: new Date(),
       })
       .where(eq(quests.id, questId))
       .returning();
 
-    // Add gold to user
-    if (goldReward > 0) {
-      await tx
-        .update(users)
-        .set({
-          goldBalance: sql`${users.goldBalance} + ${goldReward}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, session.id));
-    }
+    await tx
+      .update(users)
+      .set({
+        goldBalance: sql`${users.goldBalance} + ${goldDelta}`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, session.id));
 
-    // Get new balance
     const [user] = await tx
       .select({ goldBalance: users.goldBalance })
       .from(users)
@@ -288,13 +191,11 @@ export async function completeQuest(
       .limit(1);
 
     return {
-      quest: completedQuest,
+      quest: updatedQuest,
       newGoldBalance: Number(user.goldBalance),
-      goldReward,
     };
   });
 
-  // Update session with new gold balance
   await updateSessionGold(result.newGoldBalance);
 
   return { success: true, data: result };
@@ -305,11 +206,38 @@ export async function deleteQuest(questId: string): Promise<ActionResult> {
   const quest = await verifyQuestOwnership(questId, session.id);
   if (!quest) return { success: false, error: "Quest não encontrada" };
 
-  if (quest.status === "completed") {
-    return { success: false, error: "Quests completas não podem ser deletadas" };
+  // If quest was completed, subtract 1 gold
+  if (quest.completed) {
+    await db.transaction(async (tx) => {
+      await tx.delete(quests).where(eq(quests.id, questId));
+      await tx
+        .update(users)
+        .set({
+          goldBalance: sql`GREATEST(${users.goldBalance} - 1, 0)`,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, session.id));
+    });
+
+    // Update session gold
+    const [user] = await db
+      .select({ goldBalance: users.goldBalance })
+      .from(users)
+      .where(eq(users.id, session.id))
+      .limit(1);
+    if (user) await updateSessionGold(Number(user.goldBalance));
+  } else {
+    await db.delete(quests).where(eq(quests.id, questId));
   }
 
-  await db.delete(quests).where(eq(quests.id, questId));
-
   return { success: true, data: undefined };
+}
+
+export async function getUserGamesForSelect(): Promise<Pick<Game, "id" | "title">[]> {
+  const session = await requireAuth();
+  return db
+    .select({ id: games.id, title: games.title })
+    .from(games)
+    .where(eq(games.userId, session.id))
+    .orderBy(games.title);
 }

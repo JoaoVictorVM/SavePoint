@@ -3,9 +3,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { Game } from "@/schema/games";
-import type { Quest } from "@/schema/quests";
 import type { Tag } from "@/schema/tags";
-import type { GameWithTagsAndActiveQuest, UserSession } from "@/lib/types";
+import type { GameWithTags, UserSession } from "@/lib/types";
 
 interface AppState {
   // Auth
@@ -14,21 +13,12 @@ interface AppState {
   updateGoldBalance: (newBalance: number) => void;
 
   // Games
-  games: GameWithTagsAndActiveQuest[];
-  setGames: (games: GameWithTagsAndActiveQuest[]) => void;
-  addGame: (game: GameWithTagsAndActiveQuest) => void;
+  games: GameWithTags[];
+  setGames: (games: GameWithTags[]) => void;
+  addGame: (game: GameWithTags) => void;
   updateGame: (gameId: string, updates: Partial<Game>) => void;
   removeGame: (gameId: string) => void;
   toggleGameFavorite: (gameId: string) => void;
-
-  // Active Game Detail
-  activeGameId: string | null;
-  setActiveGameId: (id: string | null) => void;
-  quests: Quest[];
-  setQuests: (quests: Quest[]) => void;
-  addQuest: (quest: Quest) => void;
-  updateQuest: (questId: string, updates: Partial<Quest>) => void;
-  removeQuest: (questId: string) => void;
 
   // Tags
   tags: Tag[];
@@ -57,12 +47,6 @@ interface AppState {
   isTagManagerOpen: boolean;
   openTagManager: () => void;
   closeTagManager: () => void;
-  isAddQuestModalOpen: boolean;
-  openAddQuestModal: () => void;
-  closeAddQuestModal: () => void;
-  editingQuestId: string | null;
-  openEditQuestModal: (questId: string) => void;
-  closeEditQuestModal: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -95,24 +79,6 @@ export const useAppStore = create<AppState>()(
           games: state.games.map((g) =>
             g.id === gameId ? { ...g, isFavorite: !g.isFavorite } : g
           ),
-        })),
-
-      // Active Game Detail
-      activeGameId: null,
-      setActiveGameId: (id) => set({ activeGameId: id }),
-      quests: [],
-      setQuests: (quests) => set({ quests }),
-      addQuest: (quest) =>
-        set((state) => ({ quests: [...state.quests, quest] })),
-      updateQuest: (questId, updates) =>
-        set((state) => ({
-          quests: state.quests.map((q) =>
-            q.id === questId ? { ...q, ...updates } : q
-          ),
-        })),
-      removeQuest: (questId) =>
-        set((state) => ({
-          quests: state.quests.filter((q) => q.id !== questId),
         })),
 
       // Tags
@@ -162,12 +128,6 @@ export const useAppStore = create<AppState>()(
       isTagManagerOpen: false,
       openTagManager: () => set({ isTagManagerOpen: true }),
       closeTagManager: () => set({ isTagManagerOpen: false }),
-      isAddQuestModalOpen: false,
-      openAddQuestModal: () => set({ isAddQuestModalOpen: true }),
-      closeAddQuestModal: () => set({ isAddQuestModalOpen: false }),
-      editingQuestId: null,
-      openEditQuestModal: (questId) => set({ editingQuestId: questId }),
-      closeEditQuestModal: () => set({ editingQuestId: null }),
     }),
     { name: "SavePoint" }
   )

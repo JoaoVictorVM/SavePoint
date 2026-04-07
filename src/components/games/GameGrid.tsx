@@ -1,10 +1,10 @@
 "use client";
 
 import { GameCard } from "./GameCard";
-import type { GameWithTagsAndActiveQuest } from "@/lib/types";
+import type { GameWithTags } from "@/lib/types";
 
 interface GameGridProps {
-  games: GameWithTagsAndActiveQuest[];
+  games: GameWithTags[];
   onToggleFavorite: (gameId: string) => void;
   onEdit: (gameId: string) => void;
   onDelete: (gameId: string) => void;

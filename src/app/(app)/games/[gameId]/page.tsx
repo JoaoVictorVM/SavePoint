@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 import { games } from "@/schema/games";
 import { tags } from "@/schema/tags";
 import { gameTags } from "@/schema/gameTags";
-import { getQuestsForGame } from "@/actions/quests";
 import { getUserTags } from "@/actions/tags";
 import { GameDetailClient } from "@/components/games/GameDetailClient";
 
@@ -19,7 +18,6 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
 
   const { gameId } = await params;
 
-  // Fetch game with ownership check
   const [game] = await db
     .select()
     .from(games)
@@ -28,9 +26,7 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
 
   if (!game) notFound();
 
-  // Fetch quests, user tags, and game tags in parallel
-  const [questList, userTags, gameTagRows] = await Promise.all([
-    getQuestsForGame(gameId),
+  const [userTags, gameTagRows] = await Promise.all([
     getUserTags(),
     db
       .select({
@@ -56,7 +52,6 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
     <GameDetailClient
       initialUser={session}
       initialGame={game}
-      initialQuests={questList}
       initialTags={userTags}
       initialGameTags={gameTagList}
     />

@@ -4,11 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { TagPill } from "@/components/tags/TagPill";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import type { GameWithTagsAndActiveQuest } from "@/lib/types";
+import type { GameWithTags } from "@/lib/types";
 
 interface GameCardProps {
-  game: GameWithTagsAndActiveQuest;
+  game: GameWithTags;
   onToggleFavorite: (gameId: string) => void;
   onEdit: (gameId: string) => void;
   onDelete: (gameId: string) => void;
@@ -92,31 +91,6 @@ export function GameCard({
             ))}
           </div>
         )}
-
-        {/* Active quest */}
-        <div className="mt-3">
-          {game.activeQuest ? (
-            <>
-              <p className="text-[10px] uppercase tracking-wider text-[#71717A] font-medium">
-                Quest ativa
-              </p>
-              <p className="text-sm text-[#18181B] truncate mt-0.5">
-                {game.activeQuest.title}
-              </p>
-              <div className="mt-2">
-                <ProgressBar
-                  value={game.activeQuest.progress}
-                  max={game.activeQuest.progressMax}
-                  showLabel
-                  size="sm"
-                  variant="active"
-                />
-              </div>
-            </>
-          ) : (
-            <p className="text-xs text-[#71717A]">Nenhuma quest ativa</p>
-          )}
-        </div>
 
         {/* Action buttons */}
         <div className="flex justify-end gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">

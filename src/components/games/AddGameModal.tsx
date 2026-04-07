@@ -28,7 +28,7 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
     const result = await createGame(formData);
 
     if (result.success) {
-      addGame({ ...result.data, tags: [], activeQuest: null });
+      addGame({ ...result.data, tags: [] });
       toast.success("Jogo adicionado!");
       setCoverPreview("");
       onClose();

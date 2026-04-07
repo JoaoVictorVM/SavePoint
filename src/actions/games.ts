@@ -3,15 +3,13 @@
 import { eq, and, sql, ilike } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { games } from "@/schema/games";
-import { quests } from "@/schema/quests";
 import { tags } from "@/schema/tags";
 import { gameTags } from "@/schema/gameTags";
 import { getSession } from "@/lib/session";
 import { CreateGameSchema, UpdateGameSchema } from "@/validations/games";
-import type { ActionResult, GameWithTagsAndActiveQuest } from "@/lib/types";
+import type { ActionResult, GameWithTags } from "@/lib/types";
 import type { Game } from "@/schema/games";
 import type { Tag } from "@/schema/tags";
-import type { Quest } from "@/schema/quests";
 
 async function requireAuth() {
   const session = await getSession();
@@ -186,10 +184,9 @@ export async function toggleFavorite(
   return { success: true, data: { isFavorite: newValue } };
 }
 
-export async function getGames(): Promise<GameWithTagsAndActiveQuest[]> {
+export async function getGames(): Promise<GameWithTags[]> {
   const session = await requireAuth();
 
-  // Fetch games
   const userGames = await db
     .select()
     .from(games)
@@ -212,18 +209,6 @@ export async function getGames(): Promise<GameWithTagsAndActiveQuest[]> {
     .innerJoin(tags, eq(gameTags.tagId, tags.id))
     .where(sql`${gameTags.gameId} IN ${gameIds}`);
 
-  // Fetch active quests for all games
-  const activeQuests = await db
-    .select()
-    .from(quests)
-    .where(
-      and(
-        sql`${quests.gameId} IN ${gameIds}`,
-        eq(quests.status, "active")
-      )
-    );
-
-  // Map
   const tagsByGame = new Map<string, Tag[]>();
   for (const row of gameTagRows) {
     const arr = tagsByGame.get(row.gameId) || [];
@@ -238,14 +223,8 @@ export async function getGames(): Promise<GameWithTagsAndActiveQuest[]> {
     tagsByGame.set(row.gameId, arr);
   }
 
-  const activeQuestByGame = new Map<string, Quest>();
-  for (const q of activeQuests) {
-    activeQuestByGame.set(q.gameId, q);
-  }
-
   return userGames.map((game) => ({
     ...game,
     tags: tagsByGame.get(game.id) || [],
-    activeQuest: activeQuestByGame.get(game.id) || null,
   }));
 }

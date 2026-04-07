@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { updateGame } from "@/actions/games";
 import { useAppStore } from "@/stores/useAppStore";
 import toast from "react-hot-toast";
-import type { GameWithTagsAndActiveQuest } from "@/lib/types";
+import type { GameWithTags } from "@/lib/types";
 
 interface EditGameModalProps {
-  game: GameWithTagsAndActiveQuest | null;
+  game: GameWithTags | null;
   onClose: () => void;
 }
 

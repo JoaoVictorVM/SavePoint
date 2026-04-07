@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,24 +9,18 @@ import { AppShell } from "@/components/layout/AppShell";
 import { TagPill } from "@/components/tags/TagPill";
 import { TagPicker } from "@/components/tags/TagPicker";
 import { TagManager } from "@/components/tags/TagManager";
-import { ActiveQuestPanel } from "@/components/quests/ActiveQuestPanel";
-import { QuestList } from "@/components/quests/QuestList";
-import { AddQuestModal } from "@/components/quests/AddQuestModal";
-import { EditQuestModal } from "@/components/quests/EditQuestModal";
 import { EditGameModal } from "@/components/games/EditGameModal";
 import { DeleteGameDialog } from "@/components/games/DeleteGameDialog";
 import { Button } from "@/components/ui/Button";
 import { toggleFavorite } from "@/actions/games";
 import toast from "react-hot-toast";
 import type { Game } from "@/schema/games";
-import type { Quest } from "@/schema/quests";
 import type { Tag } from "@/schema/tags";
-import type { UserSession, GameWithTagsAndActiveQuest } from "@/lib/types";
+import type { UserSession, GameWithTags } from "@/lib/types";
 
 interface GameDetailClientProps {
   initialUser: UserSession;
   initialGame: Game;
-  initialQuests: Quest[];
   initialTags: Tag[];
   initialGameTags: Tag[];
 }
@@ -34,24 +28,19 @@ interface GameDetailClientProps {
 export function GameDetailClient({
   initialUser,
   initialGame,
-  initialQuests,
   initialTags,
   initialGameTags,
 }: GameDetailClientProps) {
   const router = useRouter();
   const setUser = useAppStore((s) => s.setUser);
   const user = useAppStore((s) => s.user);
-  const updateGoldBalance = useAppStore((s) => s.updateGoldBalance);
   const openTagManager = useAppStore((s) => s.openTagManager);
 
   const [game, setGame] = useState(initialGame);
-  const [quests, setQuests] = useState(initialQuests);
   const [gameTags, setGameTags] = useState(initialGameTags);
   const [imgError, setImgError] = useState(false);
 
   // Modals
-  const [isAddQuestOpen, setIsAddQuestOpen] = useState(false);
-  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [isEditGameOpen, setIsEditGameOpen] = useState(false);
   const [isDeleteGameOpen, setIsDeleteGameOpen] = useState(false);
   const [isTagPickerOpen, setIsTagPickerOpen] = useState(false);
@@ -66,65 +55,10 @@ export function GameDetailClient({
     setTags(initialTags);
   }, [initialUser, initialTags, setUser, setTags]);
 
-  const activeQuest = useMemo(
-    () => quests.find((q) => q.status === "active") || null,
-    [quests]
+  const gameForModal: GameWithTags = useMemo(
+    () => ({ ...game, tags: gameTags }),
+    [game, gameTags]
   );
-
-  const gameStats = useMemo(() => {
-    const total = quests.length;
-    const completed = quests.filter((q) => q.status === "completed").length;
-    const totalGold = quests
-      .filter((q) => q.status === "completed")
-      .reduce((sum, q) => sum + Number(q.goldReward), 0);
-    return { total, completed, totalGold };
-  }, [quests]);
-
-  // Build GameWithTagsAndActiveQuest for EditGameModal
-  const gameForModal: GameWithTagsAndActiveQuest = useMemo(
-    () => ({ ...game, tags: gameTags, activeQuest }),
-    [game, gameTags, activeQuest]
-  );
-
-  const handleQuestActivated = useCallback((activatedQuest: Quest) => {
-    setQuests((prev) =>
-      prev.map((q) => {
-        if (q.id === activatedQuest.id) return activatedQuest;
-        if (q.status === "active") return { ...q, status: "pending" as const };
-        return q;
-      })
-    );
-  }, []);
-
-  const handleQuestUpdated = useCallback((updatedQuest: Quest) => {
-    setQuests((prev) =>
-      prev.map((q) => (q.id === updatedQuest.id ? updatedQuest : q))
-    );
-  }, []);
-
-  const handleQuestCompleted = useCallback(
-    (completedQuest: Quest, newGoldBalance: number) => {
-      setQuests((prev) =>
-        prev.map((q) => (q.id === completedQuest.id ? completedQuest : q))
-      );
-      updateGoldBalance(newGoldBalance);
-    },
-    [updateGoldBalance]
-  );
-
-  const handleQuestDeactivated = useCallback((deactivatedQuest: Quest) => {
-    setQuests((prev) =>
-      prev.map((q) => (q.id === deactivatedQuest.id ? deactivatedQuest : q))
-    );
-  }, []);
-
-  const handleQuestCreated = useCallback((newQuest: Quest) => {
-    setQuests((prev) => [...prev, newQuest]);
-  }, []);
-
-  const handleQuestDeleted = useCallback((questId: string) => {
-    setQuests((prev) => prev.filter((q) => q.id !== questId));
-  }, []);
 
   async function handleToggleFavorite() {
     setGame((prev) => ({ ...prev, isFavorite: !prev.isFavorite }));
@@ -257,77 +191,17 @@ export function GameDetailClient({
             />
           </div>
         )}
-
-        {/* Stats + Active quest */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6 mb-8">
-          <ActiveQuestPanel
-            quest={activeQuest}
-            onQuestUpdated={handleQuestUpdated}
-            onQuestCompleted={handleQuestCompleted}
-            onQuestDeactivated={handleQuestDeactivated}
-          />
-
-          <div className="rounded-[16px] border border-[#E4E4E7] bg-white p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-[#18181B] uppercase tracking-wider">
-              Estatísticas
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#71717A]">Total de Quests</span>
-                <span className="text-sm font-semibold text-[#18181B]">
-                  {gameStats.total}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#71717A]">Completadas</span>
-                <span className="text-sm font-semibold text-[#06E09B]">
-                  {gameStats.completed}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#71717A]">Ouro Ganho</span>
-                <span className="text-sm font-semibold text-[#18181B] font-mono">
-                  🪙 {gameStats.totalGold.toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quest list */}
-        <QuestList
-          quests={quests}
-          onActivated={handleQuestActivated}
-          onDeleted={handleQuestDeleted}
-          onEdit={(questId) =>
-            setEditingQuest(quests.find((q) => q.id === questId) || null)
-          }
-          onAddQuest={() => setIsAddQuestOpen(true)}
-        />
       </div>
 
       {/* Modals */}
-      <AddQuestModal
-        isOpen={isAddQuestOpen}
-        onClose={() => setIsAddQuestOpen(false)}
-        gameId={game.id}
-        onCreated={handleQuestCreated}
-      />
-      <EditQuestModal
-        quest={editingQuest}
-        onClose={() => setEditingQuest(null)}
-        onUpdated={handleQuestUpdated}
-      />
       <EditGameModal
         game={isEditGameOpen ? gameForModal : null}
-        onClose={() => {
-          setIsEditGameOpen(false);
-        }}
+        onClose={() => setIsEditGameOpen(false)}
       />
       <DeleteGameDialog
         gameId={isDeleteGameOpen ? game.id : null}
         gameTitle={game.title}
-        questCount={quests.length}
+        questCount={0}
         onClose={() => {
           setIsDeleteGameOpen(false);
           handleGameDeleted();

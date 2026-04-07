@@ -14,13 +14,12 @@ import { TagManager } from "@/components/tags/TagManager";
 import { Button } from "@/components/ui/Button";
 import { toggleFavorite } from "@/actions/games";
 import toast from "react-hot-toast";
-import type { GameWithTagsAndActiveQuest } from "@/lib/types";
-import type { UserSession } from "@/lib/types";
+import type { GameWithTags, UserSession } from "@/lib/types";
 import type { Tag } from "@/schema/tags";
 
 interface DashboardClientProps {
   initialUser: UserSession;
-  initialGames: GameWithTagsAndActiveQuest[];
+  initialGames: GameWithTags[];
   initialTags: Tag[];
 }
 

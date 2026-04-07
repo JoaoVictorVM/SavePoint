@@ -24,7 +24,9 @@
       "Bash(npx drizzle-kit:*)",
       "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\dt\")",
       "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \":*)",
-      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\di\")"
+      "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\di\")",
+      "Bash(find /d/Workspace/savepoint -name *quest* -type f)",
+      "Bash(grep -E \"\\\\.\\(sql|ts\\)$\")"
     ]
   }
 }
