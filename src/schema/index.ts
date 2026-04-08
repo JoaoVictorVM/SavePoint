@@ -4,6 +4,7 @@ import { games } from "./games";
 import { quests } from "./quests";
 import { tags } from "./tags";
 import { gameTags } from "./gameTags";
+import { journeyItems } from "./journeyItems";
 
 export const usersRelations = relations(users, ({ many }) => ({
   games: many(games),
@@ -14,6 +15,7 @@ export const gamesRelations = relations(games, ({ one, many }) => ({
   user: one(users, { fields: [games.userId], references: [users.id] }),
   quests: many(quests),
   gameTags: many(gameTags),
+  journeyItem: many(journeyItems),
 }));
 
 export const questsRelations = relations(quests, ({ one }) => ({
@@ -30,4 +32,8 @@ export const gameTagsRelations = relations(gameTags, ({ one }) => ({
   tag: one(tags, { fields: [gameTags.tagId], references: [tags.id] }),
 }));
 
-export { users, games, quests, tags, gameTags };
+export const journeyItemsRelations = relations(journeyItems, ({ one }) => ({
+  game: one(games, { fields: [journeyItems.gameId], references: [games.id] }),
+}));
+
+export { users, games, quests, tags, gameTags, journeyItems };
