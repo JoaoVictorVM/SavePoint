@@ -27,9 +27,9 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // Authenticated user trying to access auth pages → redirect to dashboard
+  // Authenticated user trying to access auth pages → redirect to library
   if (isAuthenticated && isPublicRoute) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/library", request.url));
   }
 
   // Unauthenticated user trying to access protected pages → redirect to login

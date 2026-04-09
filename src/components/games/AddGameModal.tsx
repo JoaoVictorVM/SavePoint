@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
+import { StarRating } from "@/components/ui/StarRating";
 import { createGame } from "@/actions/games";
 import { useAppStore } from "@/stores/useAppStore";
+import { GAME_STATUSES, GAME_STATUS_LABELS } from "@/lib/game-constants";
 import toast from "react-hot-toast";
 
 interface AddGameModalProps {
@@ -17,7 +20,9 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [coverPreview, setCoverPreview] = useState("");
+  const [rating, setRating] = useState<number | null>(null);
   const addGame = useAppStore((s) => s.addGame);
+  const platforms = useAppStore((s) => s.platforms);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,12 +30,16 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
     setErrors({});
 
     const formData = new FormData(e.currentTarget);
+    if (rating !== null) {
+      formData.set("rating", String(rating));
+    }
+
     const result = await createGame(formData);
 
     if (result.success) {
       addGame({ ...result.data, tags: [] });
       toast.success("Jogo adicionado!");
-      setCoverPreview("");
+      resetForm();
       onClose();
     } else {
       if (result.fieldErrors) {
@@ -47,9 +56,14 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
     setIsLoading(false);
   }
 
-  function handleClose() {
+  function resetForm() {
     setErrors({});
     setCoverPreview("");
+    setRating(null);
+  }
+
+  function handleClose() {
+    resetForm();
     onClose();
   }
 
@@ -88,13 +102,61 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleClose}
+        {/* Platform */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="platformId" className="text-sm font-medium text-[#18181B]">
+            Plataforma (opcional)
+          </label>
+          <select
+            id="platformId"
+            name="platformId"
             disabled={isLoading}
+            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
           >
+            <option value="">Nenhuma</option>
+            {platforms.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Status */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="status" className="text-sm font-medium text-[#18181B]">
+            Status (opcional)
+          </label>
+          <select
+            id="status"
+            name="status"
+            disabled={isLoading}
+            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
+          >
+            <option value="">Nenhum</option>
+            {GAME_STATUSES.map((s) => (
+              <option key={s} value={s}>{GAME_STATUS_LABELS[s]}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Rating */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[#18181B]">
+            Nota (opcional)
+          </label>
+          <StarRating value={rating ?? 0} onChange={setRating} />
+        </div>
+
+        {/* Review */}
+        <Textarea
+          name="review"
+          label="Review (opcional)"
+          placeholder="O que você achou do jogo?"
+          error={errors.review}
+          disabled={isLoading}
+        />
+
+        <div className="flex justify-end gap-3 pt-2">
+          <Button type="button" variant="ghost" onClick={handleClose} disabled={isLoading}>
             Cancelar
           </Button>
           <Button type="submit" isLoading={isLoading}>

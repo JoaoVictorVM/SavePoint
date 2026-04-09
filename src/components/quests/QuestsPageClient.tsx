@@ -5,6 +5,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import { AppShell } from "@/components/layout/AppShell";
 import { GoldDisplay } from "@/components/layout/GoldDisplay";
 import { TagManager } from "@/components/tags/TagManager";
+import { PlatformManager } from "@/components/platforms/PlatformManager";
 import { QuestGroup } from "./QuestGroup";
 import { AddQuestModal } from "./AddQuestModal";
 import { EditQuestModal } from "./EditQuestModal";
@@ -31,6 +32,9 @@ export function QuestsPageClient({
   const openTagManager = useAppStore((s) => s.openTagManager);
   const isTagManagerOpen = useAppStore((s) => s.isTagManagerOpen);
   const closeTagManager = useAppStore((s) => s.closeTagManager);
+  const openPlatformManager = useAppStore((s) => s.openPlatformManager);
+  const isPlatformManagerOpen = useAppStore((s) => s.isPlatformManagerOpen);
+  const closePlatformManager = useAppStore((s) => s.closePlatformManager);
 
   const [groups, setGroups] = useState(initialGroups);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -109,6 +113,7 @@ export function QuestsPageClient({
       username={user?.username || initialUser.username}
       goldBalance={user?.goldBalance ?? initialUser.goldBalance}
       onOpenTagManager={openTagManager}
+      onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8 max-w-3xl mx-auto w-full">
         {/* Header */}
@@ -167,6 +172,10 @@ export function QuestsPageClient({
       <TagManager
         isOpen={isTagManagerOpen}
         onClose={closeTagManager}
+      />
+      <PlatformManager
+        isOpen={isPlatformManagerOpen}
+        onClose={closePlatformManager}
       />
     </AppShell>
   );

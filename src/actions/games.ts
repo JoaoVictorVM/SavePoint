@@ -22,9 +22,15 @@ export async function createGame(
 ): Promise<ActionResult<Game>> {
   const session = await requireAuth();
 
+  const ratingStr = formData.get("rating") as string;
+
   const raw = {
     title: formData.get("title") as string,
     coverImageUrl: (formData.get("coverImageUrl") as string) || undefined,
+    platformId: (formData.get("platformId") as string) || undefined,
+    rating: ratingStr ? Number(ratingStr) : undefined,
+    review: (formData.get("review") as string) || undefined,
+    status: (formData.get("status") as string) || undefined,
   };
 
   const parsed = CreateGameSchema.safeParse(raw);
@@ -63,6 +69,10 @@ export async function createGame(
       userId: session.id,
       title,
       coverImageUrl: coverImageUrl || null,
+      platformId: parsed.data.platformId || null,
+      rating: parsed.data.rating != null ? String(parsed.data.rating) : null,
+      review: parsed.data.review || null,
+      status: parsed.data.status || null,
     })
     .returning();
 
@@ -79,10 +89,18 @@ export async function updateGame(
   const title = formData.get("title") as string | null;
   const coverImageUrl = formData.get("coverImageUrl") as string | null;
   const isFavorite = formData.get("isFavorite");
+  const platformId = formData.get("platformId") as string | null;
+  const ratingStr = formData.get("rating") as string | null;
+  const review = formData.get("review") as string | null;
+  const status = formData.get("status") as string | null;
 
   if (title !== null) raw.title = title;
   if (coverImageUrl !== null) raw.coverImageUrl = coverImageUrl || undefined;
   if (isFavorite !== null) raw.isFavorite = isFavorite === "true";
+  if (platformId !== null) raw.platformId = platformId || undefined;
+  if (ratingStr !== null) raw.rating = ratingStr ? Number(ratingStr) : undefined;
+  if (review !== null) raw.review = review || undefined;
+  if (status !== null) raw.status = status || undefined;
 
   const parsed = UpdateGameSchema.safeParse(raw);
   if (!parsed.success) {
@@ -128,13 +146,19 @@ export async function updateGame(
     }
   }
 
+  const updateData: Record<string, unknown> = {
+    ...parsed.data,
+    coverImageUrl: parsed.data.coverImageUrl || null,
+    updatedAt: new Date(),
+  };
+  if ("platformId" in parsed.data) updateData.platformId = parsed.data.platformId || null;
+  if ("rating" in parsed.data) updateData.rating = parsed.data.rating != null ? String(parsed.data.rating) : null;
+  if ("review" in parsed.data) updateData.review = parsed.data.review || null;
+  if ("status" in parsed.data) updateData.status = parsed.data.status || null;
+
   const [updated] = await db
     .update(games)
-    .set({
-      ...parsed.data,
-      coverImageUrl: parsed.data.coverImageUrl || null,
-      updatedAt: new Date(),
-    })
+    .set(updateData)
     .where(eq(games.id, gameId))
     .returning();
 

@@ -23,7 +23,7 @@ export function LoginForm() {
     const result = await loginUser(formData);
 
     if (result.success) {
-      router.push("/dashboard");
+      router.push("/library");
       return;
     }
 

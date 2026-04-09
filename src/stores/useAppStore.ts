@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { Game } from "@/schema/games";
 import type { Tag } from "@/schema/tags";
+import type { Platform } from "@/schema/platforms";
 import type { GameWithTags, UserSession } from "@/lib/types";
 
 interface AppState {
@@ -27,7 +28,14 @@ interface AppState {
   updateTag: (tagId: string, updates: Partial<Tag>) => void;
   removeTag: (tagId: string) => void;
 
-  // Filters (Dashboard)
+  // Platforms
+  platforms: Platform[];
+  setPlatforms: (platforms: Platform[]) => void;
+  addPlatform: (platform: Platform) => void;
+  updatePlatform: (platformId: string, updates: Partial<Platform>) => void;
+  removePlatform: (platformId: string) => void;
+
+  // Filters (Library)
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   activeTagFilters: string[];
@@ -47,6 +55,9 @@ interface AppState {
   isTagManagerOpen: boolean;
   openTagManager: () => void;
   closeTagManager: () => void;
+  isPlatformManagerOpen: boolean;
+  openPlatformManager: () => void;
+  closePlatformManager: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -97,6 +108,22 @@ export const useAppStore = create<AppState>()(
           activeTagFilters: state.activeTagFilters.filter((id) => id !== tagId),
         })),
 
+      // Platforms
+      platforms: [],
+      setPlatforms: (platforms) => set({ platforms }),
+      addPlatform: (platform) =>
+        set((state) => ({ platforms: [...state.platforms, platform] })),
+      updatePlatform: (platformId, updates) =>
+        set((state) => ({
+          platforms: state.platforms.map((p) =>
+            p.id === platformId ? { ...p, ...updates } : p
+          ),
+        })),
+      removePlatform: (platformId) =>
+        set((state) => ({
+          platforms: state.platforms.filter((p) => p.id !== platformId),
+        })),
+
       // Filters
       searchQuery: "",
       setSearchQuery: (q) => set({ searchQuery: q }),
@@ -128,6 +155,9 @@ export const useAppStore = create<AppState>()(
       isTagManagerOpen: false,
       openTagManager: () => set({ isTagManagerOpen: true }),
       closeTagManager: () => set({ isTagManagerOpen: false }),
+      isPlatformManagerOpen: false,
+      openPlatformManager: () => set({ isPlatformManagerOpen: true }),
+      closePlatformManager: () => set({ isPlatformManagerOpen: false }),
     }),
     { name: "SavePoint" }
   )

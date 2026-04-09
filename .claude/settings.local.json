@@ -26,7 +26,10 @@
       "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \":*)",
       "Bash(PGPASSWORD=\"postgres\" psql -U postgres -d savepoint -w -c \"\\\\di\")",
       "Bash(find /d/Workspace/savepoint -name *quest* -type f)",
-      "Bash(grep -E \"\\\\.\\(sql|ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(sql|ts\\)$\")",
+      "Bash(mv src/components/dashboard src/components/library)",
+      "Bash(mv src/components/library/DashboardClient.tsx src/components/library/LibraryClient.tsx)",
+      "Bash(mv src/app/\\\\\\(app\\\\\\)/dashboard src/app/\\\\\\(app\\\\\\)/library)"
     ]
   }
 }

@@ -9,19 +9,24 @@ import { AppShell } from "@/components/layout/AppShell";
 import { TagPill } from "@/components/tags/TagPill";
 import { TagPicker } from "@/components/tags/TagPicker";
 import { TagManager } from "@/components/tags/TagManager";
+import { PlatformManager } from "@/components/platforms/PlatformManager";
 import { EditGameModal } from "@/components/games/EditGameModal";
 import { DeleteGameDialog } from "@/components/games/DeleteGameDialog";
-import { Button } from "@/components/ui/Button";
+import { StarRating } from "@/components/ui/StarRating";
 import { toggleFavorite } from "@/actions/games";
+import { GAME_STATUS_LABELS } from "@/lib/game-constants";
 import toast from "react-hot-toast";
 import type { Game } from "@/schema/games";
 import type { Tag } from "@/schema/tags";
+import type { Platform } from "@/schema/platforms";
+import type { GameStatus } from "@/lib/game-constants";
 import type { UserSession, GameWithTags } from "@/lib/types";
 
 interface GameDetailClientProps {
   initialUser: UserSession;
   initialGame: Game;
   initialTags: Tag[];
+  initialPlatforms: Platform[];
   initialGameTags: Tag[];
 }
 
@@ -29,6 +34,7 @@ export function GameDetailClient({
   initialUser,
   initialGame,
   initialTags,
+  initialPlatforms,
   initialGameTags,
 }: GameDetailClientProps) {
   const router = useRouter();
@@ -47,13 +53,18 @@ export function GameDetailClient({
 
   const isTagManagerOpen = useAppStore((s) => s.isTagManagerOpen);
   const closeTagManager = useAppStore((s) => s.closeTagManager);
+  const openPlatformManager = useAppStore((s) => s.openPlatformManager);
+  const isPlatformManagerOpen = useAppStore((s) => s.isPlatformManagerOpen);
+  const closePlatformManager = useAppStore((s) => s.closePlatformManager);
   const setTags = useAppStore((s) => s.setTags);
+  const setPlatforms = useAppStore((s) => s.setPlatforms);
   const allTags = useAppStore((s) => s.tags);
 
   useEffect(() => {
     setUser(initialUser);
     setTags(initialTags);
-  }, [initialUser, initialTags, setUser, setTags]);
+    setPlatforms(initialPlatforms);
+  }, [initialUser, initialTags, initialPlatforms, setUser, setTags, setPlatforms]);
 
   const gameForModal: GameWithTags = useMemo(
     () => ({ ...game, tags: gameTags }),
@@ -75,25 +86,71 @@ export function GameDetailClient({
   }
 
   function handleGameDeleted() {
-    router.push("/dashboard");
+    router.push("/library");
   }
+
+  const platforms = useAppStore((s) => s.platforms);
+  const gamePlatform = game.platformId
+    ? platforms.find((p) => p.id === game.platformId)
+    : null;
 
   return (
     <AppShell
       username={user?.username || initialUser.username}
       goldBalance={user?.goldBalance ?? initialUser.goldBalance}
       onOpenTagManager={openTagManager}
+      onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8 max-w-5xl mx-auto w-full">
-        {/* Back link + actions */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Back link */}
+        <div className="mb-6">
           <Link
-            href="/dashboard"
+            href="/library"
             className="text-sm text-[#71717A] hover:text-[#06E09B] transition-colors"
           >
-            ← Dashboard
+            ← Library
           </Link>
-          <div className="flex items-center gap-2">
+        </div>
+
+        {/* Banner image */}
+        <div className="relative w-full h-[200px] md:h-[260px] rounded-[16px] overflow-hidden mb-6">
+          {game.coverImageUrl && !imgError ? (
+            <Image
+              src={game.coverImageUrl}
+              alt={`Capa do jogo: ${game.title}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#06E09B]/30 to-[#0A0A0B]/40 flex items-center justify-center">
+              <span className="text-6xl font-bold text-white/40">
+                {game.title.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Title row with action icons */}
+        <div className="flex items-start justify-between mb-3">
+          <h1 className="text-3xl font-bold text-[#18181B]">{game.title}</h1>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={handleToggleFavorite}
+              className="p-2 rounded-lg text-[#71717A] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+              aria-label={game.isFavorite ? "Remover favorito" : "Favoritar"}
+            >
+              <svg
+                className="w-5 h-5"
+                fill={game.isFavorite ? "#F59E0B" : "none"}
+                stroke="#F59E0B"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+              </svg>
+            </button>
             <button
               onClick={() => setIsEditGameOpen(true)}
               className="p-2 rounded-lg text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
@@ -115,32 +172,8 @@ export function GameDetailClient({
           </div>
         </div>
 
-        {/* Game banner */}
-        <div className="relative w-full h-[200px] md:h-[200px] rounded-[16px] overflow-hidden mb-6">
-          {game.coverImageUrl && !imgError ? (
-            <Image
-              src={game.coverImageUrl}
-              alt={`Capa do jogo: ${game.title}`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#06E09B]/30 to-[#0A0A0B]/40 flex items-center justify-center">
-              <span className="text-6xl font-bold text-white/40">
-                {game.title.charAt(0).toUpperCase()}
-              </span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-          <h1 className="absolute bottom-4 left-6 text-4xl font-bold text-white">
-            {game.title}
-          </h1>
-        </div>
-
-        {/* Tags + Favorite */}
-        <div className="flex items-center gap-3 flex-wrap mb-4">
+        {/* Tags row */}
+        <div className="flex items-center gap-2 flex-wrap mb-6">
           {gameTags.map((tag) => (
             <TagPill key={tag.id} tag={tag} size="md" />
           ))}
@@ -152,21 +185,6 @@ export function GameDetailClient({
               + Tag
             </button>
           )}
-          <button
-            onClick={handleToggleFavorite}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#E4E4E7] text-xs font-medium transition-all cursor-pointer hover:border-[#F59E0B]"
-          >
-            <svg
-              className="w-3.5 h-3.5"
-              fill={game.isFavorite ? "#F59E0B" : "none"}
-              stroke="#F59E0B"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-            </svg>
-            {game.isFavorite ? "Favoritado" : "Favoritar"}
-          </button>
         </div>
 
         {/* Tag Picker */}
@@ -191,6 +209,54 @@ export function GameDetailClient({
             />
           </div>
         )}
+
+        {/* Two-column layout: metadata left, review right */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left: Metadata */}
+          <div className="space-y-4">
+            {/* Platform */}
+            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
+              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Plataforma</h3>
+              {gamePlatform ? (
+                <TagPill tag={gamePlatform} size="md" />
+              ) : (
+                <span className="text-sm text-[#A1A1AA]">Nenhuma</span>
+              )}
+            </div>
+
+            {/* Status */}
+            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
+              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Status</h3>
+              {game.status ? (
+                <span className="inline-flex px-3 py-1 rounded-full bg-[#F4F4F5] text-sm font-medium text-[#18181B]">
+                  {GAME_STATUS_LABELS[game.status as GameStatus]}
+                </span>
+              ) : (
+                <span className="text-sm text-[#A1A1AA]">Nenhum</span>
+              )}
+            </div>
+
+            {/* Rating */}
+            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
+              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Nota</h3>
+              {game.rating ? (
+                <StarRating value={Number(game.rating)} size="md" />
+              ) : (
+                <span className="text-sm text-[#A1A1AA]">Sem nota</span>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Review */}
+          <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white h-fit">
+            <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Review</h3>
+            {game.review ? (
+              <p className="text-sm text-[#18181B] whitespace-pre-wrap leading-relaxed">{game.review}</p>
+            ) : (
+              <span className="text-sm text-[#A1A1AA]">Nenhuma review ainda.</span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Modals */}
@@ -210,6 +276,10 @@ export function GameDetailClient({
       <TagManager
         isOpen={isTagManagerOpen}
         onClose={closeTagManager}
+      />
+      <PlatformManager
+        isOpen={isPlatformManagerOpen}
+        onClose={closePlatformManager}
       />
     </AppShell>
   );

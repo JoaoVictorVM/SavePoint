@@ -55,7 +55,7 @@ export function RegisterForm() {
     const result = await registerUser(formData);
 
     if (result.success) {
-      router.push("/dashboard");
+      router.push("/library");
       return;
     }
 

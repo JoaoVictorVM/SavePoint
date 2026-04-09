@@ -3,34 +3,39 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import { AppShell } from "@/components/layout/AppShell";
-import { SearchBar } from "@/components/dashboard/SearchBar";
-import { FilterBar } from "@/components/dashboard/FilterBar";
+import { SearchBar } from "@/components/library/SearchBar";
+import { FilterBar } from "@/components/library/FilterBar";
 import { GameGrid } from "@/components/games/GameGrid";
 import { EmptyGamesState } from "@/components/games/EmptyGamesState";
 import { AddGameModal } from "@/components/games/AddGameModal";
 import { EditGameModal } from "@/components/games/EditGameModal";
 import { DeleteGameDialog } from "@/components/games/DeleteGameDialog";
 import { TagManager } from "@/components/tags/TagManager";
+import { PlatformManager } from "@/components/platforms/PlatformManager";
 import { Button } from "@/components/ui/Button";
 import { toggleFavorite } from "@/actions/games";
 import toast from "react-hot-toast";
 import type { GameWithTags, UserSession } from "@/lib/types";
 import type { Tag } from "@/schema/tags";
+import type { Platform } from "@/schema/platforms";
 
-interface DashboardClientProps {
+interface LibraryClientProps {
   initialUser: UserSession;
   initialGames: GameWithTags[];
   initialTags: Tag[];
+  initialPlatforms: Platform[];
 }
 
-export function DashboardClient({
+export function LibraryClient({
   initialUser,
   initialGames,
   initialTags,
-}: DashboardClientProps) {
+  initialPlatforms,
+}: LibraryClientProps) {
   const setUser = useAppStore((s) => s.setUser);
   const setGames = useAppStore((s) => s.setGames);
   const setTags = useAppStore((s) => s.setTags);
+  const setPlatforms = useAppStore((s) => s.setPlatforms);
   const games = useAppStore((s) => s.games);
   const user = useAppStore((s) => s.user);
   const searchQuery = useAppStore((s) => s.searchQuery);
@@ -49,6 +54,9 @@ export function DashboardClient({
   const isTagManagerOpen = useAppStore((s) => s.isTagManagerOpen);
   const openTagManager = useAppStore((s) => s.openTagManager);
   const closeTagManager = useAppStore((s) => s.closeTagManager);
+  const isPlatformManagerOpen = useAppStore((s) => s.isPlatformManagerOpen);
+  const openPlatformManager = useAppStore((s) => s.openPlatformManager);
+  const closePlatformManager = useAppStore((s) => s.closePlatformManager);
 
   // Delete dialog
   const [deletingGameId, setDeletingGameId] = useState<string | null>(null);
@@ -58,7 +66,8 @@ export function DashboardClient({
     setUser(initialUser);
     setGames(initialGames);
     setTags(initialTags);
-  }, [initialUser, initialGames, initialTags, setUser, setGames, setTags]);
+    setPlatforms(initialPlatforms);
+  }, [initialUser, initialGames, initialTags, initialPlatforms, setUser, setGames, setTags, setPlatforms]);
 
   // Filtered games
   const filteredGames = useMemo(() => {
@@ -106,6 +115,7 @@ export function DashboardClient({
       username={user?.username || initialUser.username}
       goldBalance={user?.goldBalance ?? initialUser.goldBalance}
       onOpenTagManager={openTagManager}
+      onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8">
         {/* Toolbar */}
@@ -154,6 +164,10 @@ export function DashboardClient({
       <TagManager
         isOpen={isTagManagerOpen}
         onClose={closeTagManager}
+      />
+      <PlatformManager
+        isOpen={isPlatformManagerOpen}
+        onClose={closePlatformManager}
       />
     </AppShell>
   );

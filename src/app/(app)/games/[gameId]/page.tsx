@@ -6,6 +6,7 @@ import { games } from "@/schema/games";
 import { tags } from "@/schema/tags";
 import { gameTags } from "@/schema/gameTags";
 import { getUserTags } from "@/actions/tags";
+import { getUserPlatforms } from "@/actions/platforms";
 import { GameDetailClient } from "@/components/games/GameDetailClient";
 
 interface GameDetailPageProps {
@@ -26,8 +27,9 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
 
   if (!game) notFound();
 
-  const [userTags, gameTagRows] = await Promise.all([
+  const [userTags, userPlatforms, gameTagRows] = await Promise.all([
     getUserTags(),
+    getUserPlatforms(),
     db
       .select({
         tagId: gameTags.tagId,
@@ -53,6 +55,7 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
       initialUser={session}
       initialGame={game}
       initialTags={userTags}
+      initialPlatforms={userPlatforms}
       initialGameTags={gameTagList}
     />
   );
