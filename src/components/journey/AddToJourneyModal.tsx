@@ -81,18 +81,18 @@ export function AddToJourneyModal({
       <div className="space-y-4">
         {isFetching ? (
           <div className="flex justify-center py-8">
-            <svg className="animate-spin h-6 w-6 text-[#06E09B]" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-6 w-6 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
           </div>
         ) : availableGames.length === 0 ? (
-          <p className="text-sm text-[#71717A] text-center py-8">
+          <p className="text-sm text-[var(--color-text-muted)] text-center py-8">
             Todos os jogos já estão na Journey.
           </p>
         ) : (
           <>
-            <p className="text-sm text-[#71717A]">
+            <p className="text-sm text-[var(--color-text-muted)]">
               Selecione os jogos para adicionar:
             </p>
             <div className="max-h-[300px] overflow-y-auto space-y-2">
@@ -105,8 +105,8 @@ export function AddToJourneyModal({
                     className={`
                       w-full flex items-center gap-3 p-2.5 rounded-[12px] text-left transition-colors cursor-pointer
                       ${isSelected
-                        ? "bg-[#06E09B]/10 border border-[#06E09B]"
-                        : "border border-[#E4E4E7] hover:bg-[#F4F4F5]"
+                        ? "bg-[var(--color-accent)]/10 border border-[var(--color-accent)]"
+                        : "border border-[var(--color-border)] hover:bg-[var(--color-bg-hover)]"
                       }
                     `}
                   >
@@ -114,8 +114,8 @@ export function AddToJourneyModal({
                     <div
                       className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? "bg-[#06E09B] border-[#06E09B]"
-                          : "border-[#D4D4D8]"
+                          ? "bg-[var(--color-accent)] border-[var(--color-accent)]"
+                          : "border-[var(--color-border)]"
                       }`}
                     >
                       {isSelected && (
@@ -126,7 +126,7 @@ export function AddToJourneyModal({
                     </div>
 
                     {/* Game thumbnail */}
-                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-[#F4F4F5]">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-[var(--color-bg-elevated)]">
                       {game.coverImageUrl ? (
                         <Image
                           src={game.coverImageUrl}
@@ -136,8 +136,8 @@ export function AddToJourneyModal({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-[#06E09B]/30 to-[#0A0A0B]/20 flex items-center justify-center">
-                          <span className="text-xs font-bold text-white/60">
+                        <div className="w-full h-full bg-gradient-to-br from-[var(--color-accent)]/30 to-[var(--color-bg-base)]/20 flex items-center justify-center">
+                          <span className="text-xs font-bold text-[var(--color-text-primary)]/60">
                             {game.title.charAt(0).toUpperCase()}
                           </span>
                         </div>
@@ -145,7 +145,7 @@ export function AddToJourneyModal({
                     </div>
 
                     {/* Title */}
-                    <span className="text-sm font-medium text-[#18181B] truncate">
+                    <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                       {game.title}
                     </span>
                   </button>

@@ -11,7 +11,7 @@ const sizeMap = {
 export function Spinner({ size = "md" }: SpinnerProps) {
   return (
     <svg
-      className={`animate-spin ${sizeMap[size]} text-[#06E09B]`}
+      className={`animate-spin ${sizeMap[size]} text-[var(--color-accent)]`}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

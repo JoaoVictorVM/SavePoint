@@ -17,7 +17,7 @@ function getPasswordStrength(password: string) {
 }
 
 const strengthLabels = ["", "Fraca", "Fraca", "Média", "Forte", "Muito forte"];
-const strengthColors = ["", "#FF453A", "#FF453A", "#EAB308", "#22C55E", "#06E09B"];
+const strengthColors = ["", "#FF453A", "#FF453A", "#EAB308", "#22C55E", "#2FE0AE"];
 
 export function RegisterForm() {
   const router = useRouter();
@@ -124,7 +124,7 @@ export function RegisterForm() {
                   className="flex-1 rounded-full transition-all duration-200"
                   style={{
                     backgroundColor:
-                      strength >= level ? strengthColors[strength] : "#E4E4E7",
+                      strength >= level ? strengthColors[strength] : "var(--color-bg-elevated)",
                   }}
                 />
               ))}
@@ -140,7 +140,7 @@ export function RegisterForm() {
             <ul className="space-y-0.5 text-xs">
               <li
                 className={
-                  passwordChecks.length ? "text-[#22C55E]" : "text-[#71717A]"
+                  passwordChecks.length ? "text-[#22C55E]" : "text-[var(--color-text-muted)]"
                 }
               >
                 {passwordChecks.length ? "✓" : "○"} Mínimo 8 caracteres
@@ -149,14 +149,14 @@ export function RegisterForm() {
                 className={
                   passwordChecks.uppercase
                     ? "text-[#22C55E]"
-                    : "text-[#71717A]"
+                    : "text-[var(--color-text-muted)]"
                 }
               >
                 {passwordChecks.uppercase ? "✓" : "○"} Uma letra maiúscula
               </li>
               <li
                 className={
-                  passwordChecks.number ? "text-[#22C55E]" : "text-[#71717A]"
+                  passwordChecks.number ? "text-[#22C55E]" : "text-[var(--color-text-muted)]"
                 }
               >
                 {passwordChecks.number ? "✓" : "○"} Um número

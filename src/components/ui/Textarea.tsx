@@ -16,7 +16,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="text-sm font-medium text-[#18181B]"
+            className="text-sm font-medium text-[var(--color-text-primary)]"
           >
             {label}
           </label>
@@ -27,11 +27,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={`
             w-full px-4 py-3 rounded-[16px]
             border text-sm resize-none
+            bg-[var(--color-bg-elevated)]
+            text-[var(--color-text-primary)]
             transition-all duration-[150ms] ease
-            placeholder:text-[#A1A1AA]
-            focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent
+            placeholder:text-[var(--color-text-muted)]
+            focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${error ? "border-[#FF453A]" : "border-[#E4E4E7]"}
+            ${error ? "border-[var(--color-error)]" : "border-[var(--color-border)]"}
             ${className}
           `}
           rows={4}
@@ -42,7 +44,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {error && (
           <p
             id={`${textareaId}-error`}
-            className="text-xs text-[#FF453A] flex items-center gap-1"
+            className="text-xs text-[var(--color-error)] flex items-center gap-1"
             role="alert"
           >
             <span>⚠</span> {error}

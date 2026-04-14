@@ -30,15 +30,15 @@ export function KanbanColumn({
   return (
     <div
       className={`
-        flex flex-col w-[280px] min-w-[280px] rounded-[16px] bg-[#F4F4F5]/60 border
+        flex flex-col w-[280px] min-w-[280px] rounded-[16px] bg-[var(--color-bg-elevated)]/60 border
         transition-colors duration-200
-        ${isOver ? "border-[#06E09B] bg-[#06E09B]/5" : "border-transparent"}
+        ${isOver ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5" : "border-transparent"}
       `}
     >
       {/* Column header */}
       <div className="flex items-center justify-between px-4 py-3">
-        <h3 className="text-sm font-semibold text-[#18181B]">{label}</h3>
-        <span className="text-xs text-[#A1A1AA] bg-white px-2 py-0.5 rounded-full">
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">{label}</h3>
+        <span className="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-elevated)] px-2 py-0.5 rounded-full">
           {cards.length}
         </span>
       </div>
@@ -61,7 +61,7 @@ export function KanbanColumn({
         {/* Add to journey button */}
         <button
           onClick={() => onAddClick(columnId)}
-          className="w-full py-3 rounded-[12px] border-2 border-dashed border-[#E4E4E7] text-sm text-[#A1A1AA] hover:border-[#06E09B] hover:text-[#06E09B] transition-colors cursor-pointer"
+          className="w-full py-3 rounded-[12px] border-2 border-dashed border-[var(--color-border)] text-sm text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors cursor-pointer"
         >
           + Adicionar a Jornada
         </button>

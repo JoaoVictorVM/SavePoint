@@ -23,7 +23,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
   const removeTagStore = useAppStore((s) => s.removeTag);
 
   const [newName, setNewName] = useState("");
-  const [newColor, setNewColor] = useState("#06E09B");
+  const [newColor, setNewColor] = useState("#2FE0AE");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
@@ -49,7 +49,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
     if (result.success) {
       addTagStore(result.data);
       setNewName("");
-      setNewColor("#06E09B");
+      setNewColor("#2FE0AE");
       toast.success("Tag criada!");
     } else {
       setCreateError(result.fieldErrors?.name?.[0] || result.error);
@@ -131,9 +131,9 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
         </div>
 
         {/* Existing tags */}
-        <div className="border-t border-[#E4E4E7] pt-4">
+        <div className="border-t border-[var(--color-border)] pt-4">
           {tags.length === 0 ? (
-            <p className="text-sm text-[#71717A] text-center py-4">
+            <p className="text-sm text-[var(--color-text-muted)] text-center py-4">
               Nenhuma tag criada. Crie tags para organizar seus jogos.
             </p>
           ) : (
@@ -141,7 +141,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
               {tags.map((tag) => (
                 <li
                   key={tag.id}
-                  className="flex items-center gap-3 p-2 rounded-[12px] hover:bg-[#F4F4F5] transition-colors"
+                  className="flex items-center gap-3 p-2 rounded-[12px] hover:bg-[var(--color-bg-hover)] transition-colors"
                 >
                   {editingId === tag.id ? (
                     /* Edit mode */
@@ -172,7 +172,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
                   ) : deletingId === tag.id ? (
                     /* Delete confirmation */
                     <div className="flex-1">
-                      <p className="text-sm text-[#FF453A] mb-2">
+                      <p className="text-sm text-[var(--color-error)] mb-2">
                         Remover esta tag de todos os jogos?
                       </p>
                       <div className="flex gap-2">
@@ -200,7 +200,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
                       <div className="ml-auto flex gap-1">
                         <button
                           onClick={() => startEdit(tag)}
-                          className="p-1.5 rounded-lg text-[#71717A] hover:text-[#18181B] hover:bg-[#E4E4E7] transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors cursor-pointer"
                           aria-label="Editar tag"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +209,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
                         </button>
                         <button
                           onClick={() => setDeletingId(tag.id)}
-                          className="p-1.5 rounded-lg text-[#71717A] hover:text-[#FF453A] hover:bg-[#FF453A]/5 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-colors cursor-pointer"
                           aria-label="Deletar tag"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

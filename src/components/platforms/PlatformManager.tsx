@@ -131,9 +131,9 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
         </div>
 
         {/* Existing platforms */}
-        <div className="border-t border-[#E4E4E7] pt-4">
+        <div className="border-t border-[var(--color-border)] pt-4">
           {platformsList.length === 0 ? (
-            <p className="text-sm text-[#71717A] text-center py-4">
+            <p className="text-sm text-[var(--color-text-muted)] text-center py-4">
               Nenhuma plataforma criada. Crie plataformas para organizar seus jogos.
             </p>
           ) : (
@@ -141,7 +141,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
               {platformsList.map((platform) => (
                 <li
                   key={platform.id}
-                  className="flex items-center gap-3 p-2 rounded-[12px] hover:bg-[#F4F4F5] transition-colors"
+                  className="flex items-center gap-3 p-2 rounded-[12px] hover:bg-[var(--color-bg-hover)] transition-colors"
                 >
                   {editingId === platform.id ? (
                     <div className="flex-1 space-y-2">
@@ -162,7 +162,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
                     </div>
                   ) : deletingId === platform.id ? (
                     <div className="flex-1">
-                      <p className="text-sm text-[#FF453A] mb-2">
+                      <p className="text-sm text-[var(--color-error)] mb-2">
                         Remover esta plataforma?
                       </p>
                       <div className="flex gap-2">
@@ -185,7 +185,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
                       <div className="ml-auto flex gap-1">
                         <button
                           onClick={() => startEdit(platform)}
-                          className="p-1.5 rounded-lg text-[#71717A] hover:text-[#18181B] hover:bg-[#E4E4E7] transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors cursor-pointer"
                           aria-label="Editar plataforma"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +194,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
                         </button>
                         <button
                           onClick={() => setDeletingId(platform.id)}
-                          className="p-1.5 rounded-lg text-[#71717A] hover:text-[#FF453A] hover:bg-[#FF453A]/5 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-colors cursor-pointer"
                           aria-label="Deletar plataforma"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

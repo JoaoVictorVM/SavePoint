@@ -38,11 +38,12 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       className="
-        backdrop:bg-black/40 backdrop:backdrop-blur-sm
-        bg-white rounded-[24px] p-8 max-w-[500px] w-[calc(100%-32px)]
+        backdrop:bg-black/60 backdrop:backdrop-blur-sm
+        bg-[var(--color-bg-surface)] rounded-[24px] p-8 max-w-[500px] w-[calc(100%-32px)]
         shadow-[var(--shadow-medium)]
         animate-[modal-in_200ms_ease-out]
         open:flex open:flex-col
+        border border-[var(--color-border)]
       "
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -53,13 +54,13 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       <div className="flex items-center justify-between mb-6">
         <h2
           id="modal-title"
-          className="text-xl font-semibold text-[#18181B]"
+          className="text-xl font-semibold text-[var(--color-text-primary)]"
         >
           {title}
         </h2>
         <button
           onClick={onClose}
-          className="text-[#71717A] hover:text-[#18181B] transition-colors p-1 cursor-pointer"
+          className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors p-1 cursor-pointer"
           aria-label="Fechar"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

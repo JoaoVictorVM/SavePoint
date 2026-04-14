@@ -34,7 +34,7 @@ export function JourneyCard({ card, onRemove }: JourneyCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative rounded-[16px] border border-[#E4E4E7] bg-white shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-200 overflow-hidden"
+      className="group relative rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-200 overflow-hidden"
     >
       {/* Drag handle — the cover area */}
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
@@ -49,8 +49,8 @@ export function JourneyCard({ card, onRemove }: JourneyCardProps) {
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#06E09B]/30 to-[#0A0A0B]/20 flex items-center justify-center">
-              <span className="text-3xl font-bold text-white/60">
+            <div className="w-full h-full bg-gradient-to-br from-[var(--color-accent)]/30 to-[var(--color-bg-base)]/20 flex items-center justify-center">
+              <span className="text-3xl font-bold text-[var(--color-text-primary)]/40">
                 {card.title.charAt(0).toUpperCase()}
               </span>
             </div>
@@ -71,7 +71,7 @@ export function JourneyCard({ card, onRemove }: JourneyCardProps) {
 
       {/* Content */}
       <div className="p-3">
-        <h3 className="text-sm font-semibold text-[#18181B] truncate">
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
           {card.title}
         </h3>
 

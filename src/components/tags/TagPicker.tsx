@@ -53,7 +53,7 @@ export function TagPicker({
 
   if (allTags.length === 0) {
     return (
-      <p className="text-sm text-[#71717A]">
+      <p className="text-sm text-[var(--color-text-muted)]">
         Nenhuma tag criada. Crie tags no menu do usuário.
       </p>
     );
@@ -76,7 +76,7 @@ export function TagPicker({
               onClick={() => handleToggle(tag)}
             />
             {isAssigned && (
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#06E09B] rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--color-accent)] rounded-full flex items-center justify-center">
                 <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
@@ -86,7 +86,7 @@ export function TagPicker({
         );
       })}
       {atMax && (
-        <p className="text-[10px] text-[#A1A1AA] w-full mt-1">
+        <p className="text-[10px] text-[var(--color-text-muted)] w-full mt-1">
           Máximo de 5 tags atingido
         </p>
       )}

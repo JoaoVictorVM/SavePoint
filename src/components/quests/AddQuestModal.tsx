@@ -72,7 +72,7 @@ export function AddQuestModal({ isOpen, onClose, games, onCreated }: AddQuestMod
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Game select */}
         <div className="flex flex-col gap-1.5 w-full">
-          <label htmlFor="quest-game" className="text-sm font-medium text-[#18181B]">
+          <label htmlFor="quest-game" className="text-sm font-medium text-[var(--color-text-primary)]">
             Jogo vinculado
           </label>
           <select
@@ -82,11 +82,11 @@ export function AddQuestModal({ isOpen, onClose, games, onCreated }: AddQuestMod
             disabled={isLoading}
             className={`
               w-full h-11 px-4 rounded-full
-              border text-sm bg-white
+              border text-sm bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)]
               transition-all duration-[150ms] ease
-              focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
-              ${errors.gameId ? "border-[#FF453A]" : "border-[#E4E4E7]"}
+              ${errors.gameId ? "border-[var(--color-error)]" : "border-[var(--color-border)]"}
             `}
             required
           >
@@ -98,7 +98,7 @@ export function AddQuestModal({ isOpen, onClose, games, onCreated }: AddQuestMod
             ))}
           </select>
           {errors.gameId && (
-            <p className="text-xs text-[#FF453A] flex items-center gap-1" role="alert">
+            <p className="text-xs text-[var(--color-error)] flex items-center gap-1" role="alert">
               <span>⚠</span> {errors.gameId}
             </p>
           )}

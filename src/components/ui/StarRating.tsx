@@ -12,7 +12,6 @@ export function StarRating({ value, onChange, size = "md" }: StarRatingProps) {
   function handleClick(starIndex: number, isLeftHalf: boolean) {
     if (!onChange) return;
     const newValue = isLeftHalf ? starIndex + 0.5 : starIndex + 1;
-    // Toggle off if clicking same value
     onChange(newValue === value ? 0 : newValue);
   }
 
@@ -26,7 +25,7 @@ export function StarRating({ value, onChange, size = "md" }: StarRatingProps) {
         return (
           <div key={starIndex} className={`relative ${starSize} ${onChange ? "cursor-pointer" : ""}`}>
             {/* Background (empty star) */}
-            <svg className={`${starSize} text-[#E4E4E7]`} fill="currentColor" viewBox="0 0 24 24">
+            <svg className={`${starSize} text-[var(--color-bg-elevated)]`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
             </svg>
 
@@ -36,13 +35,12 @@ export function StarRating({ value, onChange, size = "md" }: StarRatingProps) {
                 className="absolute inset-0 overflow-hidden"
                 style={{ width: isFull ? "100%" : "50%" }}
               >
-                <svg className={`${starSize} text-[#F59E0B]`} fill="currentColor" viewBox="0 0 24 24">
+                <svg className={`${starSize} text-[var(--color-gold)]`} fill="currentColor" viewBox="0 0 24 24">
                   <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                 </svg>
               </div>
             )}
 
-            {/* Click areas (left half / right half) */}
             {onChange && (
               <>
                 <button
@@ -63,7 +61,7 @@ export function StarRating({ value, onChange, size = "md" }: StarRatingProps) {
         );
       })}
       {value > 0 && (
-        <span className="ml-1.5 text-sm text-[#71717A]">{value}</span>
+        <span className="ml-1.5 text-sm text-[var(--color-text-muted)]">{value}</span>
       )}
     </div>
   );

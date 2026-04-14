@@ -17,7 +17,7 @@ export function SearchBar() {
   return (
     <div className="relative max-w-[400px] w-full">
       <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"
+        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -34,12 +34,12 @@ export function SearchBar() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Buscar jogos..."
-        className="w-full h-10 pl-9 pr-8 rounded-full border border-[#E4E4E7] text-sm focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent transition-all"
+        className="w-full h-10 pl-9 pr-8 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent transition-all"
       />
       {value && (
         <button
           onClick={() => setValue("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-[#18181B] cursor-pointer"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] cursor-pointer"
           aria-label="Limpar busca"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

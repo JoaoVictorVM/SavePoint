@@ -106,7 +106,7 @@ export function GameDetailClient({
         <div className="mb-6">
           <Link
             href="/library"
-            className="text-sm text-[#71717A] hover:text-[#06E09B] transition-colors"
+            className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
           >
             ← Library
           </Link>
@@ -124,8 +124,8 @@ export function GameDetailClient({
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#06E09B]/30 to-[#0A0A0B]/40 flex items-center justify-center">
-              <span className="text-6xl font-bold text-white/40">
+            <div className="w-full h-full bg-gradient-to-br from-[var(--color-accent)]/30 to-[var(--color-bg-base)]/40 flex items-center justify-center">
+              <span className="text-6xl font-bold text-[var(--color-text-primary)]/30">
                 {game.title.charAt(0).toUpperCase()}
               </span>
             </div>
@@ -134,17 +134,17 @@ export function GameDetailClient({
 
         {/* Title row with action icons */}
         <div className="flex items-start justify-between mb-3">
-          <h1 className="text-3xl font-bold text-[#18181B]">{game.title}</h1>
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">{game.title}</h1>
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={handleToggleFavorite}
-              className="p-2 rounded-lg text-[#71717A] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] transition-colors cursor-pointer"
               aria-label={game.isFavorite ? "Remover favorito" : "Favoritar"}
             >
               <svg
                 className="w-5 h-5"
-                fill={game.isFavorite ? "#F59E0B" : "none"}
-                stroke="#F59E0B"
+                fill={game.isFavorite ? "var(--color-gold)" : "none"}
+                stroke="var(--color-gold)"
                 strokeWidth={2}
                 viewBox="0 0 24 24"
               >
@@ -153,7 +153,7 @@ export function GameDetailClient({
             </button>
             <button
               onClick={() => setIsEditGameOpen(true)}
-              className="p-2 rounded-lg text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] transition-colors cursor-pointer"
               aria-label="Editar jogo"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@ export function GameDetailClient({
             </button>
             <button
               onClick={() => setIsDeleteGameOpen(true)}
-              className="p-2 rounded-lg text-[#71717A] hover:text-[#FF453A] hover:bg-[#FF453A]/5 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-colors cursor-pointer"
               aria-label="Deletar jogo"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +180,7 @@ export function GameDetailClient({
           {gameTags.length < 5 && (
             <button
               onClick={() => setIsTagPickerOpen(!isTagPickerOpen)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-[#E4E4E7] text-xs text-[#71717A] hover:border-[#06E09B] hover:text-[#06E09B] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-[var(--color-border)] text-xs text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors cursor-pointer"
             >
               + Tag
             </button>
@@ -189,12 +189,12 @@ export function GameDetailClient({
 
         {/* Tag Picker */}
         {isTagPickerOpen && (
-          <div className="mb-6 p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
+          <div className="mb-6 p-4 rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-[#18181B]">Selecionar Tags</h4>
+              <h4 className="text-sm font-medium text-[var(--color-text-primary)]">Selecionar Tags</h4>
               <button
                 onClick={() => setIsTagPickerOpen(false)}
-                className="text-[#71717A] hover:text-[#18181B] cursor-pointer"
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -215,45 +215,45 @@ export function GameDetailClient({
           {/* Left: Metadata */}
           <div className="space-y-4">
             {/* Platform */}
-            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
-              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Plataforma</h3>
+            <div className="p-4 rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+              <h3 className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">Plataforma</h3>
               {gamePlatform ? (
                 <TagPill tag={gamePlatform} size="md" />
               ) : (
-                <span className="text-sm text-[#A1A1AA]">Nenhuma</span>
+                <span className="text-sm text-[var(--color-text-muted)]">Nenhuma</span>
               )}
             </div>
 
             {/* Status */}
-            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
-              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Status</h3>
+            <div className="p-4 rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+              <h3 className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">Status</h3>
               {game.status ? (
-                <span className="inline-flex px-3 py-1 rounded-full bg-[#F4F4F5] text-sm font-medium text-[#18181B]">
+                <span className="inline-flex px-3 py-1 rounded-full bg-[var(--color-bg-elevated)] text-sm font-medium text-[var(--color-text-primary)]">
                   {GAME_STATUS_LABELS[game.status as GameStatus]}
                 </span>
               ) : (
-                <span className="text-sm text-[#A1A1AA]">Nenhum</span>
+                <span className="text-sm text-[var(--color-text-muted)]">Nenhum</span>
               )}
             </div>
 
             {/* Rating */}
-            <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white">
-              <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Nota</h3>
+            <div className="p-4 rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+              <h3 className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">Nota</h3>
               {game.rating ? (
                 <StarRating value={Number(game.rating)} size="md" />
               ) : (
-                <span className="text-sm text-[#A1A1AA]">Sem nota</span>
+                <span className="text-sm text-[var(--color-text-muted)]">Sem nota</span>
               )}
             </div>
           </div>
 
           {/* Right: Review */}
-          <div className="p-4 rounded-[16px] border border-[#E4E4E7] bg-white h-fit">
-            <h3 className="text-xs font-medium text-[#71717A] uppercase tracking-wide mb-2">Review</h3>
+          <div className="p-4 rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] h-fit">
+            <h3 className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">Review</h3>
             {game.review ? (
-              <p className="text-sm text-[#18181B] whitespace-pre-wrap leading-relaxed">{game.review}</p>
+              <p className="text-sm text-[var(--color-text-primary)] whitespace-pre-wrap leading-relaxed">{game.review}</p>
             ) : (
-              <span className="text-sm text-[#A1A1AA]">Nenhuma review ainda.</span>
+              <span className="text-sm text-[var(--color-text-muted)]">Nenhuma review ainda.</span>
             )}
           </div>
         </div>

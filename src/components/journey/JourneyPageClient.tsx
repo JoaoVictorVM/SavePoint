@@ -39,7 +39,7 @@ export function JourneyPageClient({
       onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-[#18181B] mb-6">Journey</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Journey</h1>
         <KanbanBoard initialData={initialData} />
       </div>
 

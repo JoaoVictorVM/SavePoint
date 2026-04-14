@@ -119,7 +119,7 @@ export function QuestsPageClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-[#18181B]">Quests</h1>
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Quests</h1>
             <GoldDisplay amount={user?.goldBalance ?? initialUser.goldBalance} animate />
           </div>
           <Button onClick={() => setIsAddOpen(true)}>+ Nova Quest</Button>
@@ -141,15 +141,15 @@ export function QuestsPageClient({
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F4F4F5] flex items-center justify-center">
-              <svg className="w-8 h-8 text-[#A1A1AA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center">
+              <svg className="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-[#18181B] mb-1">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">
               Nenhuma quest ainda
             </h3>
-            <p className="text-sm text-[#71717A] mb-4">
+            <p className="text-sm text-[var(--color-text-muted)] mb-4">
               Crie sua primeira quest para começar a ganhar ouro!
             </p>
             <Button onClick={() => setIsAddOpen(true)}>+ Nova Quest</Button>

@@ -102,7 +102,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
             disabled={isLoading}
           />
           {coverUrl && (
-            <div className="mt-2 w-[60px] h-[80px] rounded-lg overflow-hidden border border-[#E4E4E7]">
+            <div className="mt-2 w-[60px] h-[80px] rounded-lg overflow-hidden border border-[var(--color-border)]">
               <img
                 src={coverUrl}
                 alt="Preview"
@@ -117,7 +117,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
 
         {/* Platform */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="edit-platformId" className="text-sm font-medium text-[#18181B]">
+          <label htmlFor="edit-platformId" className="text-sm font-medium text-[var(--color-text-primary)]">
             Plataforma (opcional)
           </label>
           <select
@@ -125,7 +125,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
             value={platformId}
             onChange={(e) => setPlatformId(e.target.value)}
             disabled={isLoading}
-            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
+            className="w-full h-11 px-4 rounded-full border border-[var(--color-border)] text-sm bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent disabled:opacity-50"
           >
             <option value="">Nenhuma</option>
             {platforms.map((p) => (
@@ -136,7 +136,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
 
         {/* Status */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="edit-status" className="text-sm font-medium text-[#18181B]">
+          <label htmlFor="edit-status" className="text-sm font-medium text-[var(--color-text-primary)]">
             Status (opcional)
           </label>
           <select
@@ -144,7 +144,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             disabled={isLoading}
-            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
+            className="w-full h-11 px-4 rounded-full border border-[var(--color-border)] text-sm bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent disabled:opacity-50"
           >
             <option value="">Nenhum</option>
             {GAME_STATUSES.map((s) => (
@@ -155,7 +155,7 @@ export function EditGameModal({ game, onClose }: EditGameModalProps) {
 
         {/* Rating */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[#18181B]">
+          <label className="text-sm font-medium text-[var(--color-text-primary)]">
             Nota (opcional)
           </label>
           <StarRating value={rating ?? 0} onChange={setRating} />

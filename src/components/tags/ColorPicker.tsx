@@ -5,7 +5,7 @@ import { useState } from "react";
 const PRESET_COLORS = [
   "#EF4444", "#F97316", "#EAB308", "#22C55E",
   "#06B6D4", "#3B82F6", "#8B5CF6", "#EC4899",
-  "#06E09B", "#F59E0B", "#71717A", "#18181B",
+  "#2FE0AE", "#F59E0B", "#71717A", "#18181B",
 ];
 
 interface ColorPickerProps {
@@ -26,7 +26,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
             onClick={() => onChange(color)}
             className={`w-7 h-7 rounded-full border-2 transition-all cursor-pointer ${
               value === color
-                ? "border-[#18181B] scale-110"
+                ? "border-[var(--color-accent)] scale-110"
                 : "border-transparent hover:scale-105"
             }`}
             style={{ backgroundColor: color }}
@@ -36,7 +36,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
       </div>
       <div className="flex items-center gap-2">
         <div
-          className="w-7 h-7 rounded-full border border-[#E4E4E7] shrink-0"
+          className="w-7 h-7 rounded-full border border-[var(--color-border)] shrink-0"
           style={{ backgroundColor: value }}
         />
         <input
@@ -49,8 +49,8 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
               onChange(v);
             }
           }}
-          placeholder="#06E09B"
-          className="w-24 h-8 px-2 rounded-lg border border-[#E4E4E7] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#06E09B]"
+          placeholder="#2FE0AE"
+          className="w-24 h-8 px-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
         />
       </div>
     </div>

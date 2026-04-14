@@ -13,12 +13,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-[#06E09B] text-[#18181B] hover:bg-[#05c889] font-semibold",
+    "bg-[var(--color-accent)] text-[var(--color-bg-base)] hover:bg-[var(--color-accent-muted)] font-semibold",
   secondary:
-    "bg-transparent border border-[#E4E4E7] text-[#18181B] hover:bg-[#F4F4F5]",
-  ghost: "bg-transparent text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5]",
+    "bg-transparent border border-[var(--color-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]",
+  ghost:
+    "bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]",
   danger:
-    "bg-transparent border border-[#FF453A] text-[#FF453A] hover:bg-[#FF453A]/10",
+    "bg-transparent border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error)]/10",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -47,7 +48,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={`
           inline-flex items-center justify-center gap-2
           transition-all duration-[150ms] ease
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#06E09B]
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]
           disabled:opacity-50 disabled:cursor-not-allowed
           cursor-pointer
           ${variantStyles[variant]}

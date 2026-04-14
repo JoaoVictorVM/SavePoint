@@ -26,7 +26,7 @@ export function ProgressBar({
   return (
     <div className="flex items-center gap-2 w-full">
       <div
-        className={`flex-1 rounded-full bg-[#E4E4E7] overflow-hidden ${sizeMap[size]}`}
+        className={`flex-1 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden ${sizeMap[size]}`}
         role="progressbar"
         aria-valuenow={value}
         aria-valuemin={0}
@@ -35,13 +35,13 @@ export function ProgressBar({
       >
         <div
           className={`h-full rounded-full transition-all duration-300 ease-out ${
-            variant === "active" ? "bg-[#06E09B]" : "bg-[#06E09B]"
+            variant === "active" ? "bg-[var(--color-accent)]" : "bg-[var(--color-accent)]"
           }`}
           style={{ width: `${percentage}%` }}
         />
       </div>
       {showLabel && (
-        <span className="text-xs text-[#71717A] font-medium whitespace-nowrap">
+        <span className="text-xs text-[var(--color-text-muted)] font-medium whitespace-nowrap">
           {percentage}%
         </span>
       )}

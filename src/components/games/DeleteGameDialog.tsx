@@ -43,12 +43,12 @@ export function DeleteGameDialog({
   return (
     <Modal isOpen={!!gameId} onClose={onClose} title="Deletar Jogo">
       <div className="space-y-4">
-        <p className="text-sm text-[#18181B]">
+        <p className="text-sm text-[var(--color-text-primary)]">
           Tem certeza que deseja deletar{" "}
           <strong>&quot;{gameTitle}&quot;</strong>?
         </p>
         {questCount > 0 && (
-          <p className="text-sm text-[#FF453A]">
+          <p className="text-sm text-[var(--color-error)]">
             Este jogo tem {questCount} quest{questCount > 1 ? "s" : ""}. Ao
             deletar, todas serão removidas permanentemente.
           </p>
@@ -58,11 +58,7 @@ export function DeleteGameDialog({
           <Button variant="ghost" onClick={onClose} disabled={isLoading}>
             Cancelar
           </Button>
-          <Button
-            variant="danger"
-            onClick={handleDelete}
-            isLoading={isLoading}
-          >
+          <Button variant="danger" onClick={handleDelete} isLoading={isLoading}>
             Deletar
           </Button>
         </div>

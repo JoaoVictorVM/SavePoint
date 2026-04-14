@@ -22,14 +22,14 @@ export function QuestGroup({
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="rounded-[16px] border border-[#E4E4E7] bg-white overflow-hidden">
+    <div className="rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] overflow-hidden">
       {/* Game header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-2 px-4 py-3 hover:bg-[#F4F4F5]/50 transition-colors cursor-pointer"
+        className="w-full flex items-center gap-2 px-4 py-3 hover:bg-[var(--color-bg-hover)]/50 transition-colors cursor-pointer"
       >
         <svg
-          className={`w-4 h-4 text-[#71717A] transition-transform duration-200 ${
+          className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform duration-200 ${
             isExpanded ? "" : "-rotate-90"
           }`}
           fill="none"
@@ -38,8 +38,8 @@ export function QuestGroup({
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-        <h3 className="text-sm font-semibold text-[#18181B]">{gameTitle}</h3>
-        <span className="text-xs text-[#A1A1AA] ml-1">
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">{gameTitle}</h3>
+        <span className="text-xs text-[var(--color-text-muted)] ml-1">
           {quests.length}
         </span>
       </button>

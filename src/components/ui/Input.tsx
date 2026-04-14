@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-[#18181B]"
+            className="text-sm font-medium text-[var(--color-text-primary)]"
           >
             {label}
           </label>
@@ -36,11 +36,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={`
               w-full h-11 px-4 rounded-full
               border text-sm
+              bg-[var(--color-bg-elevated)]
+              text-[var(--color-text-primary)]
               transition-all duration-[150ms] ease
-              placeholder:text-[#A1A1AA]
-              focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent
+              placeholder:text-[var(--color-text-muted)]
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
-              ${error ? "border-[#FF453A]" : "border-[#E4E4E7]"}
+              ${error ? "border-[var(--color-error)]" : "border-[var(--color-border)]"}
               ${className}
             `}
             aria-invalid={!!error}
@@ -51,7 +53,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] hover:text-[#18181B] transition-colors cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
               aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? (
@@ -70,7 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p
             id={`${inputId}-error`}
-            className="text-xs text-[#FF453A] flex items-center gap-1"
+            className="text-xs text-[var(--color-error)] flex items-center gap-1"
             role="alert"
           >
             <span>⚠</span> {error}

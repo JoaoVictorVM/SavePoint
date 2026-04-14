@@ -235,7 +235,7 @@ export function KanbanBoard({ initialData }: KanbanBoardProps) {
         title="Remover da Journey"
       >
         <div className="space-y-4">
-          <p className="text-sm text-[#18181B]">
+          <p className="text-sm text-[var(--color-text-primary)]">
             Tem certeza que deseja remover{" "}
             <strong>&quot;{removingItem?.title}&quot;</strong> da Journey?
           </p>

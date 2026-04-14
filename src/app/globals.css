@@ -11,18 +11,35 @@
 }
 
 :root {
-  --color-primary: #06e09b;
-  --color-bg-light: #fafafa;
-  --color-bg-dark: #0a0a0b;
-  --color-surface: #ffffff;
-  --color-text: #686972;
-  --color-muted: #71717a;
-  --color-border: #262935;
-  --color-error: #ff453a;
-  --color-hover: #1b1d27;
-  --color-text-hover: #ffffff;
-  --color-dark: #1b1d27;
+  /* ─── Backgrounds ─── */
+  --color-bg-base: #181425;       /* body, sidebar base */
+  --color-bg-surface: #1f1e2c;    /* cards, modals, panels */
+  --color-bg-elevated: #32313f;   /* inputs, dropdowns, raised elements */
+  --color-bg-hover: #242332;      /* hover states */
+  --color-bg-subtle: #1b1927;     /* very subtle areas */
 
+  /* ─── Text ─── */
+  --color-text-primary: #f6f5fc;  /* main text */
+  --color-text-muted: #90919e;    /* secondary / placeholder text */
+
+  /* ─── Borders ─── */
+  --color-border: #292735;        /* main borders and dividers */
+
+  /* ─── Accent ─── */
+  --color-accent: #2fe0ae;        /* primary accent (buttons, highlights, links) */
+  --color-accent-muted: #51cbad;  /* softer accent (hover, secondary) */
+  --color-accent-dark: #0d362e;   /* accent tint background */
+  --color-accent-deep: #2e7065;   /* deep accent (pressed states) */
+
+  /* ─── Non-palette semantic ─── */
+  --color-error: #ff453a;         /* errors, destructive actions */
+  --color-gold: #f59e0b;          /* gold balance, star ratings */
+
+  /* ─── Shadows (tuned for dark backgrounds) ─── */
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  /* ─── Spacing & radius (unchanged) ─── */
   --radius-default: 16px;
   --radius-large: 24px;
   --radius-full: 9999px;
@@ -34,25 +51,9 @@
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
-
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-medium:
-    0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-
-  --background: #14161e;
-  --foreground: #18181b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: #06e09b;
-  --color-surface: #ffffff;
-  --color-muted: #71717a;
-  --color-border: #262935;
-  --color-error: #ff453a;
-  --color-gold: #f59e0b;
-
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
@@ -60,15 +61,26 @@
   --radius-large: 24px;
   --radius-full: 9999px;
 
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-medium:
-    0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-medium: var(--shadow-medium);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
   font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ─── Modal animation ─── */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

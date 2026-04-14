@@ -89,7 +89,7 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
             onChange={(e) => setCoverPreview(e.target.value)}
           />
           {coverPreview && (
-            <div className="mt-2 w-[60px] h-[80px] rounded-lg overflow-hidden border border-[#E4E4E7]">
+            <div className="mt-2 w-[60px] h-[80px] rounded-lg overflow-hidden border border-[var(--color-border)]">
               <img
                 src={coverPreview}
                 alt="Preview"
@@ -104,14 +104,14 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
 
         {/* Platform */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="platformId" className="text-sm font-medium text-[#18181B]">
+          <label htmlFor="platformId" className="text-sm font-medium text-[var(--color-text-primary)]">
             Plataforma (opcional)
           </label>
           <select
             id="platformId"
             name="platformId"
             disabled={isLoading}
-            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
+            className="w-full h-11 px-4 rounded-full border border-[var(--color-border)] text-sm bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent disabled:opacity-50"
           >
             <option value="">Nenhuma</option>
             {platforms.map((p) => (
@@ -122,14 +122,14 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
 
         {/* Status */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="status" className="text-sm font-medium text-[#18181B]">
+          <label htmlFor="status" className="text-sm font-medium text-[var(--color-text-primary)]">
             Status (opcional)
           </label>
           <select
             id="status"
             name="status"
             disabled={isLoading}
-            className="w-full h-11 px-4 rounded-full border border-[#E4E4E7] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#06E09B] focus:border-transparent disabled:opacity-50"
+            className="w-full h-11 px-4 rounded-full border border-[var(--color-border)] text-sm bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent disabled:opacity-50"
           >
             <option value="">Nenhum</option>
             {GAME_STATUSES.map((s) => (
@@ -140,7 +140,7 @@ export function AddGameModal({ isOpen, onClose }: AddGameModalProps) {
 
         {/* Rating */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[#18181B]">
+          <label className="text-sm font-medium text-[var(--color-text-primary)]">
             Nota (opcional)
           </label>
           <StarRating value={rating ?? 0} onChange={setRating} />

@@ -33,7 +33,6 @@ export function GoldDisplay({ amount, animate = false }: GoldDisplayProps) {
     function step(currentTime: number) {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // easeOut
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplayAmount(start + diff * eased);
 
@@ -48,17 +47,17 @@ export function GoldDisplay({ amount, animate = false }: GoldDisplayProps) {
 
   return (
     <div
-      className="flex items-center gap-2 bg-[#06E09B]/10 px-3 py-1.5 rounded-full"
+      className="flex items-center gap-2 bg-[var(--color-accent-dark)] px-3 py-1.5 rounded-full"
       aria-live="polite"
     >
       <svg
-        className="w-4 h-4 text-[#06E09B]"
+        className="w-4 h-4 text-[var(--color-accent)]"
         fill="currentColor"
         viewBox="0 0 20 20"
       >
         <circle cx="10" cy="10" r="8" />
       </svg>
-      <span className="text-sm font-bold font-mono text-[#18181B]">
+      <span className="text-sm font-bold font-mono text-[var(--color-accent)]">
         {formatGold(displayAmount)}
       </span>
     </div>

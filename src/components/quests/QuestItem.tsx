@@ -45,7 +45,7 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
 
   return (
     <>
-      <div className="group flex items-start gap-3 py-2.5 px-3 rounded-[12px] hover:bg-[#F4F4F5]/50 transition-colors">
+      <div className="group flex items-start gap-3 py-2.5 px-3 rounded-[12px] hover:bg-[var(--color-bg-hover)]/50 transition-colors">
         {/* Checkbox */}
         <button
           onClick={handleToggle}
@@ -54,13 +54,13 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
           aria-label={quest.completed ? "Desmarcar quest" : "Completar quest"}
         >
           {quest.completed ? (
-            <div className="w-5 h-5 rounded-full bg-[#06E09B] flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[var(--color-accent)] flex items-center justify-center">
               <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
             </div>
           ) : (
-            <div className="w-5 h-5 rounded-full border-2 border-[#D4D4D8] hover:border-[#06E09B] transition-colors" />
+            <div className="w-5 h-5 rounded-full border-2 border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors" />
           )}
         </button>
 
@@ -70,8 +70,8 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
             <span
               className={`text-sm font-medium ${
                 quest.completed
-                  ? "line-through text-[#A1A1AA]"
-                  : "text-[#18181B]"
+                  ? "line-through text-[var(--color-text-muted)]"
+                  : "text-[var(--color-text-primary)]"
               }`}
             >
               {quest.title}
@@ -82,7 +82,7 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
               {!quest.completed && (
                 <button
                   onClick={() => onEdit(quest)}
-                  className="p-1 rounded-md text-[#71717A] hover:text-[#18181B] hover:bg-[#E4E4E7] transition-colors cursor-pointer"
+                  className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors cursor-pointer"
                   aria-label="Editar quest"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
               )}
               <button
                 onClick={() => setIsDeleteOpen(true)}
-                className="p-1 rounded-md text-[#71717A] hover:text-[#FF453A] hover:bg-[#FF453A]/5 transition-colors cursor-pointer"
+                className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-colors cursor-pointer"
                 aria-label="Excluir quest"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +105,7 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
           {quest.description && (
             <p
               className={`text-xs mt-0.5 ${
-                quest.completed ? "text-[#D4D4D8]" : "text-[#71717A]"
+                quest.completed ? "text-[var(--color-text-muted)]/60" : "text-[var(--color-text-muted)]"
               }`}
             >
               {quest.description}
@@ -117,12 +117,12 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
       {/* Delete confirmation modal */}
       <Modal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} title="Excluir Quest">
         <div className="space-y-4">
-          <p className="text-sm text-[#18181B]">
+          <p className="text-sm text-[var(--color-text-primary)]">
             Tem certeza que deseja excluir{" "}
             <strong>&quot;{quest.title}&quot;</strong>?
           </p>
           {quest.completed && (
-            <p className="text-sm text-[#FF453A]">
+            <p className="text-sm text-[var(--color-error)]">
               Esta quest está concluída. Ao excluir, 1 ouro será removido do seu saldo.
             </p>
           )}
