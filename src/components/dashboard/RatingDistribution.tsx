@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { DashboardRatingBucket } from "@/actions/dashboard";
 
 interface RatingDistributionProps {
@@ -7,143 +8,133 @@ interface RatingDistributionProps {
   totalRated: number;
 }
 
-/**
- * Renderiza a label de estrelas para a nota indicada.
- * Nota em incrementos de 0.5 → metade estrela cheia.
- */
-function StarLabel({ rating }: { rating: number }) {
-  if (rating === -1) {
-    return (
-      <span className="text-xs text-[var(--color-text-muted)]">Sem nota</span>
-    );
-  }
-
-  const fullStars = Math.floor(rating);
-  const hasHalf = rating - fullStars >= 0.5;
-  const stars: React.ReactNode[] = [];
-
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      stars.push(<Star key={i} fill={1} />);
-    } else if (i === fullStars && hasHalf) {
-      stars.push(<Star key={i} fill={0.5} />);
-    } else {
-      stars.push(<Star key={i} fill={0} />);
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-0.5" aria-label={`Nota ${rating}`}>
-      {stars}
-    </div>
-  );
-}
-
-function Star({ fill }: { fill: 0 | 0.5 | 1 }) {
-  const gold = "var(--color-gold)";
-  const empty = "var(--color-bg-elevated)";
-
-  if (fill === 1) {
-    return (
-      <svg className="w-3 h-3" viewBox="0 0 24 24" fill={gold}>
-        <path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.7L5.8 21l1.6-7L2 9.5l7.1-.6L12 2z" />
-      </svg>
-    );
-  }
-  if (fill === 0.5) {
-    return (
-      <svg className="w-3 h-3" viewBox="0 0 24 24">
-        <defs>
-          <linearGradient id={`half-${Math.random()}`} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="50%" stopColor={gold} />
-            <stop offset="50%" stopColor={empty} />
-          </linearGradient>
-        </defs>
-        <path
-          d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.7L5.8 21l1.6-7L2 9.5l7.1-.6L12 2z"
-          fill={`url(#half-${Math.random()})`}
-        />
-      </svg>
-    );
-  }
-  return (
-    <svg className="w-3 h-3" viewBox="0 0 24 24" fill={empty}>
-      <path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.7L5.8 21l1.6-7L2 9.5l7.1-.6L12 2z" />
-    </svg>
-  );
-}
-
 export function RatingDistribution({
   data,
   totalRated,
 }: RatingDistributionProps) {
-  const maxValue = Math.max(...data.map((d) => d.value), 1);
-  const hasData = data.some((d) => d.value > 0);
+  // 0 = nenhuma estrela selecionada; 0.5 ... 5.0 = selecionada
+  const [selected, setSelected] = useState(0);
 
-  // Ordem: maior nota em cima (5.0, 4.5, ... 0.5), depois "Sem nota"
-  const sorted = [
-    ...data.filter((d) => d.rating !== -1).sort((a, b) => b.rating - a.rating),
-    ...data.filter((d) => d.rating === -1),
-  ];
+  // Map rating -> count para lookup rápido
+  const countByRating = new Map<number, number>();
+  let semNota = 0;
+  for (const bucket of data) {
+    if (bucket.rating === -1) {
+      semNota = bucket.value;
+    } else {
+      countByRating.set(bucket.rating, bucket.value);
+    }
+  }
+
+  function handleClick(starIndex: number, isLeftHalf: boolean) {
+    const newValue = isLeftHalf ? starIndex + 0.5 : starIndex + 1;
+    setSelected(newValue === selected ? 0 : newValue);
+  }
+
+  const selectedCount = selected > 0 ? countByRating.get(selected) ?? 0 : 0;
 
   return (
-    <div className="rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-5 flex flex-col">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-            Distribuição de notas
-          </h3>
-          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-            {totalRated} {totalRated === 1 ? "jogo avaliado" : "jogos avaliados"}
-          </p>
-        </div>
+    <div className="rounded-[16px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-5 flex flex-col h-full">
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
+          Distribuição de notas
+        </h3>
+        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+          {totalRated} {totalRated === 1 ? "jogo avaliado" : "jogos avaliados"}
+          {semNota > 0 && (
+            <>
+              {" "}
+              ·{" "}
+              <span>
+                {semNota} {semNota === 1 ? "jogo sem nota" : "jogos sem nota"}
+              </span>
+            </>
+          )}
+        </p>
       </div>
 
-      {hasData ? (
-        <div className="space-y-1.5 flex-1">
-          {sorted.map((bucket) => {
-            const pct = (bucket.value / maxValue) * 100;
-            const isEmpty = bucket.value === 0;
+      <div className="flex-1 flex items-center justify-center gap-6 py-4">
+        {/* Estrelas interativas */}
+        <div
+          className="flex items-center gap-1"
+          role="radiogroup"
+          aria-label="Selecione uma nota"
+        >
+          {[0, 1, 2, 3, 4].map((starIndex) => {
+            const filled = selected - starIndex;
+            const isFull = filled >= 1;
+            const isHalf = !isFull && filled >= 0.5;
+
             return (
               <div
-                key={bucket.rating}
-                className="flex items-center gap-3 text-xs"
+                key={starIndex}
+                className="relative w-12 h-12"
               >
-                <div className="w-[90px] shrink-0 flex items-center">
-                  <StarLabel rating={bucket.rating} />
-                </div>
-                <div className="flex-1 h-5 bg-[var(--color-bg-elevated)] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-300 ease-out"
-                    style={{
-                      width: isEmpty ? 0 : `${Math.max(pct, 4)}%`,
-                      backgroundColor:
-                        bucket.rating === -1
-                          ? "var(--color-text-muted)"
-                          : "var(--color-gold)",
-                    }}
-                  />
-                </div>
-                <span
-                  className={`w-8 text-right font-medium ${
-                    isEmpty
-                      ? "text-[var(--color-text-muted)]"
-                      : "text-[var(--color-text-primary)]"
-                  }`}
+                {/* Estrela vazia (fundo) */}
+                <svg
+                  className="w-12 h-12 text-[var(--color-bg-elevated)]"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {bucket.value}
-                </span>
+                  <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+
+                {/* Estrela preenchida (overlay) */}
+                {(isFull || isHalf) && (
+                  <div
+                    className="absolute inset-0 overflow-hidden pointer-events-none"
+                    style={{ width: isFull ? "100%" : "50%" }}
+                  >
+                    <svg
+                      className="w-12 h-12 text-[var(--color-gold)]"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                    </svg>
+                  </div>
+                )}
+
+                {/* Áreas de clique: metade esquerda (0.5) e metade direita (1.0) */}
+                <button
+                  type="button"
+                  className="absolute inset-y-0 left-0 w-1/2 cursor-pointer hover:scale-110 transition-transform"
+                  onClick={() => handleClick(starIndex, true)}
+                  aria-label={`${starIndex + 0.5} estrelas`}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 w-1/2 cursor-pointer hover:scale-110 transition-transform"
+                  onClick={() => handleClick(starIndex, false)}
+                  aria-label={`${starIndex + 1} estrelas`}
+                />
               </div>
             );
           })}
         </div>
-      ) : (
-        <div className="h-[260px] flex items-center justify-center">
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Sem dados no período
-          </p>
+
+        {/* Contador ao lado */}
+        <div className="min-w-[120px] flex flex-col items-start border-l border-[var(--color-border)] pl-6">
+          {selected > 0 ? (
+            <>
+              <p className="text-3xl font-bold text-[var(--color-text-primary)] leading-none">
+                {selectedCount}
+              </p>
+              <p className="text-xs text-[var(--color-text-muted)] mt-1.5">
+                {selectedCount === 1 ? "jogo" : "jogos"} com{" "}
+                <span className="text-[var(--color-gold)] font-semibold">
+                  {selected.toFixed(1).replace(/\.0$/, "")}{" "}
+                  {selected === 1 ? "estrela" : "estrelas"}
+                </span>
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Clique em uma estrela para ver a quantidade de jogos com aquela nota
+            </p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
