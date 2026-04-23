@@ -23,6 +23,12 @@ export interface DashboardTimelinePoint {
   value: number; // jogos adicionados
 }
 
+export interface DashboardRatingBucket {
+  rating: number; // 0.5 ... 5.0 ou null (sem nota, representado como -1)
+  label: string;  // "0.5", "1.0", ... ou "Sem nota"
+  value: number;
+}
+
 export interface DashboardData {
   period: DashboardPeriod;
   range: { start: string; end: string; previousStart: string; previousEnd: string };
@@ -42,6 +48,11 @@ export interface DashboardData {
   statusBreakdown: DashboardBreakdownItem[];
   platformBreakdown: DashboardBreakdownItem[];
   tagsBreakdown: DashboardBreakdownItem[];
+
+  // Rating distribution + reviews
+  ratingDistribution: DashboardRatingBucket[];
+  reviewsCount: number;
+  ratedCount: number; // total de jogos com nota (para texto auxiliar)
 
   // Timeline
   timeline: DashboardTimelinePoint[];
@@ -172,6 +183,8 @@ export async function getDashboardData(
       platformId: games.platformId,
       isFavorite: games.isFavorite,
       createdAt: games.createdAt,
+      rating: games.rating,
+      review: games.review,
     })
     .from(games)
     .where(
@@ -324,7 +337,47 @@ export async function getDashboardData(
     });
   }
 
-  // ---- 7. Timeline: jogos adicionados por bucket ----
+  // ---- 7. Distribuição de notas (meia-estrela) + Reviews ----
+  // Buckets: 0.5, 1.0, ..., 5.0 + "Sem nota"
+  const ratingBuckets = new Map<number, number>();
+  for (let i = 1; i <= 10; i++) {
+    ratingBuckets.set(i * 0.5, 0);
+  }
+  let semNota = 0;
+  let reviewsCount = 0;
+
+  for (const g of userGamesInPeriod) {
+    const ratingNum = g.rating != null ? Number(g.rating) : null;
+    if (ratingNum == null || Number.isNaN(ratingNum)) {
+      semNota += 1;
+    } else {
+      // Arredonda pro meio mais próximo (0.5) por segurança
+      const rounded = Math.round(ratingNum * 2) / 2;
+      if (ratingBuckets.has(rounded)) {
+        ratingBuckets.set(rounded, (ratingBuckets.get(rounded) ?? 0) + 1);
+      }
+    }
+    if (g.review && g.review.trim().length > 0) {
+      reviewsCount += 1;
+    }
+  }
+
+  const ratingDistribution: DashboardRatingBucket[] = Array.from(
+    ratingBuckets.entries()
+  ).map(([rating, value]) => ({
+    rating,
+    label: rating.toFixed(1),
+    value,
+  }));
+  ratingDistribution.push({
+    rating: -1,
+    label: "Sem nota",
+    value: semNota,
+  });
+
+  const ratedCount = totalGamesAdded - semNota;
+
+  // ---- 8. Timeline: jogos adicionados por bucket ----
   const buckets = buildTimelineBuckets(period, start);
   const bucketIndex = new Map(buckets.map((b, i) => [b.key, i]));
   const values = new Array(buckets.length).fill(0);
@@ -356,6 +409,9 @@ export async function getDashboardData(
     statusBreakdown,
     platformBreakdown,
     tagsBreakdown,
+    ratingDistribution,
+    reviewsCount,
+    ratedCount,
     timeline,
   };
 }

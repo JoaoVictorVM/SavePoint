@@ -39,7 +39,9 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       ref={dialogRef}
       className="
         backdrop:bg-black/60 backdrop:backdrop-blur-sm
+        fixed inset-0 m-auto
         bg-[var(--color-bg-surface)] rounded-[24px] p-8 max-w-[500px] w-[calc(100%-32px)]
+        max-h-[calc(100dvh-32px)]
         shadow-[var(--shadow-medium)]
         animate-[modal-in_200ms_ease-out]
         open:flex open:flex-col

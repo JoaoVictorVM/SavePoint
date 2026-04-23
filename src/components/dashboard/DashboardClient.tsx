@@ -8,6 +8,8 @@ import { PeriodFilter } from "./PeriodFilter";
 import { StatCard } from "./StatCard";
 import { GoldStatCard } from "./GoldStatCard";
 import { DonutChart } from "./DonutChart";
+import { RatingDistribution } from "./RatingDistribution";
+import { ReviewsCard } from "./ReviewsCard";
 import { TimelineChart } from "./TimelineChart";
 import { getDashboardData } from "@/actions/dashboard";
 import { useAppStore } from "@/stores/useAppStore";
@@ -138,6 +140,26 @@ export function DashboardClient({
           <DonutChart title="Por status" data={data.statusBreakdown} />
           <DonutChart title="Por plataforma" data={data.platformBreakdown} />
           <DonutChart title="Por tags" data={data.tagsBreakdown} />
+        </section>
+
+        {/* Distribuição de notas + Reviews */}
+        <section
+          className={`grid grid-cols-1 md:grid-cols-3 gap-4 transition-opacity ${
+            isPending ? "opacity-60" : "opacity-100"
+          }`}
+        >
+          <div className="md:col-span-2">
+            <RatingDistribution
+              data={data.ratingDistribution}
+              totalRated={data.ratedCount}
+            />
+          </div>
+          <div className="md:col-span-1">
+            <ReviewsCard
+              count={data.reviewsCount}
+              totalGames={data.totalGamesAdded}
+            />
+          </div>
         </section>
 
         {/* Timeline */}
