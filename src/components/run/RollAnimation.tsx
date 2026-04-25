@@ -8,7 +8,7 @@ export function RollAnimation() {
         className="w-[220px] h-[300px] rounded-[16px] border-2 border-[var(--color-accent)] flex flex-col items-center justify-center gap-6 bg-gradient-to-br from-[var(--color-accent)]/10 to-[var(--color-bg-base)]/5"
         style={{
           animation: "rollGlow 0.8s ease-in-out infinite",
-          boxShadow: "0 0 30px rgba(47, 224, 174, 0.25)",
+          boxShadow: "0 0 30px rgba(136, 192, 208, 0.25)",
         }}
       >
         {/* Spinning dice icon */}
@@ -32,8 +32,8 @@ export function RollAnimation() {
 
       <style>{`
         @keyframes rollGlow {
-          0%, 100% { box-shadow: 0 0 20px rgba(47, 224, 174, 0.2); border-color: rgba(47, 224, 174, 0.6); }
-          50% { box-shadow: 0 0 50px rgba(47, 224, 174, 0.5); border-color: rgba(47, 224, 174, 1); }
+          0%, 100% { box-shadow: 0 0 20px rgba(136, 192, 208, 0.2); border-color: rgba(136, 192, 208, 0.6); }
+          50% { box-shadow: 0 0 50px rgba(136, 192, 208, 0.5); border-color: rgba(136, 192, 208, 1); }
         }
         @keyframes rollSpin {
           from { transform: rotate(0deg); }

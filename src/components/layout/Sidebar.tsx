@@ -96,7 +96,7 @@ export function Sidebar({
       <div className="flex items-center justify-between h-[72px] px-4 border-b border-[var(--color-border)]">
         {!isCollapsed && (
           <Link href="/library" className="text-xl font-bold text-[var(--color-text-primary)]">
-            Save<span className="text-[var(--color-accent)]">Point</span>
+            Save<span className="text-[var(--color-interactive)]">Point</span>
           </Link>
         )}
         <button
@@ -130,7 +130,7 @@ export function Sidebar({
                     transition-colors
                     ${
                       isActive
-                        ? "bg-[var(--color-accent-dark)] text-[var(--color-accent)]"
+                        ? "bg-[var(--color-accent-dark)] text-[var(--color-interactive)]"
                         : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
                     }
                   `}
@@ -192,7 +192,7 @@ export function Sidebar({
           aria-label="Menu do usuário"
           aria-expanded={isUserMenuOpen}
         >
-          <div className="w-8 h-8 rounded-full bg-[var(--color-accent-dark)] border border-[var(--color-accent)]/30 flex items-center justify-center text-sm font-semibold text-[var(--color-accent)] shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[var(--color-accent-dark)] border border-[var(--color-accent)]/30 flex items-center justify-center text-sm font-semibold text-[var(--color-interactive)] shrink-0">
             {initial}
           </div>
           {!isCollapsed && (

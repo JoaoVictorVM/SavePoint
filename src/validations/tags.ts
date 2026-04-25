@@ -8,7 +8,7 @@ export const CreateTagSchema = z.object({
     .trim(),
   color: z
     .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Cor deve ser um hex válido (ex: #06E09B)"),
+    .regex(/^#[0-9A-Fa-f]{6}$/, "Cor deve ser um hex válido (ex: #88C0D0)"),
 });
 
 export const UpdateTagSchema = CreateTagSchema.partial();

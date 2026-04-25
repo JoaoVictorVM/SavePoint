@@ -11,33 +11,48 @@
 }
 
 :root {
+  /* ─── Nord Light Theme ─── */
+  /* Polar Night (texts) */
+  /* nord0 #2E3440 · nord1 #3B4252 · nord2 #434C5E · nord3 #4C566A */
+  /* Snow Storm (backgrounds) */
+  /* nord4 #D8DEE9 · nord5 #E5E9F0 · nord6 #ECEFF4 */
+  /* Frost (accents) */
+  /* nord7 #8FBCBB · nord8 #88C0D0 · nord9 #81A1C1 · nord10 #5E81AC */
+  /* Aurora (semantic) */
+  /* nord11 #BF616A · nord12 #D08770 · nord13 #EBCB8B · nord14 #A3BE8C · nord15 #B48EAD */
+
   /* ─── Backgrounds ─── */
-  --color-bg-base: #181425;       /* body, sidebar base */
-  --color-bg-surface: #1f1e2c;    /* cards, modals, panels */
-  --color-bg-elevated: #32313f;   /* inputs, dropdowns, raised elements */
-  --color-bg-hover: #242332;      /* hover states */
-  --color-bg-subtle: #1b1927;     /* very subtle areas */
+  --color-bg-base: #eceff4;       /* nord6 — body, sidebar base */
+  --color-bg-surface: #e5e9f0;    /* nord5 — cards, modals, panels */
+  --color-bg-elevated: #d8dee9;   /* nord4 — inputs, dropdowns, raised */
+  --color-bg-hover: #d8dee9;      /* nord4 — hover states (alias) */
+  --color-bg-subtle: #e5e9f0;     /* nord5 — subtle areas (alias) */
 
   /* ─── Text ─── */
-  --color-text-primary: #f6f5fc;  /* main text */
-  --color-text-muted: #90919e;    /* secondary / placeholder text */
+  --color-text-primary: #2e3440;   /* nord0 — main text */
+  --color-text-secondary: #3b4252; /* nord1 — secondary text */
+  --color-text-muted: #4c566a;     /* nord3 — muted / placeholder text */
 
   /* ─── Borders ─── */
-  --color-border: #292735;        /* main borders and dividers */
+  --color-border: #d8dee9;        /* nord4 — borders and dividers */
 
-  /* ─── Accent ─── */
-  --color-accent: #2fe0ae;        /* primary accent (buttons, highlights, links) */
-  --color-accent-muted: #51cbad;  /* softer accent (hover, secondary) */
-  --color-accent-dark: #0d362e;   /* accent tint background */
-  --color-accent-deep: #2e7065;   /* deep accent (pressed states) */
+  /* ─── Accent (Frost) ─── */
+  --color-accent: #88c0d0;        /* nord8 — primary accent */
+  --color-accent-alt: #8fbcbb;    /* nord7 — secondary frost */
+  --color-accent-muted: #8fbcbb;  /* nord7 — softer accent (alias) */
+  --color-accent-dark: #d8dee9;   /* nord4 — accent tint bg (alias) */
+  --color-accent-deep: #5e81ac;   /* nord10 — pressed/deep accent (alias) */
+  --color-interactive: #5e81ac;   /* nord10 — links, important interactive elements */
 
-  /* ─── Non-palette semantic ─── */
-  --color-error: #ff453a;         /* errors, destructive actions */
-  --color-gold: #f59e0b;          /* gold balance, star ratings */
+  /* ─── Aurora (semantic) ─── */
+  --color-error: #bf616a;         /* nord11 — errors, destructive */
+  --color-warning: #ebcb8b;       /* nord13 — warning */
+  --color-success: #a3be8c;       /* nord14 — success */
+  --color-gold: #ebcb8b;          /* nord13 — gold balance, stars (alias) */
 
-  /* ─── Shadows (tuned for dark backgrounds) ─── */
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  /* ─── Shadows (tuned for light backgrounds) ─── */
+  --shadow-soft: 0 1px 3px rgba(46, 52, 64, 0.08), 0 1px 2px rgba(46, 52, 64, 0.06);
+  --shadow-medium: 0 4px 16px rgba(46, 52, 64, 0.12), 0 2px 6px rgba(46, 52, 64, 0.08);
 
   /* ─── Spacing & radius (unchanged) ─── */
   --radius-default: 16px;

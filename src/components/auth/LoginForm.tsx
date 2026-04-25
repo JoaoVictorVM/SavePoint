@@ -43,7 +43,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {globalError && (
-        <div className="bg-[#FF453A]/10 border border-[#FF453A]/30 rounded-[16px] px-4 py-3 text-sm text-[#FF453A]">
+        <div className="bg-[var(--color-error)]/10 border border-[var(--color-error)]/30 rounded-[16px] px-4 py-3 text-sm text-[var(--color-error)]">
           {globalError}
         </div>
       )}

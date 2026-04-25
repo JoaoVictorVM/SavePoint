@@ -49,7 +49,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
               onChange(v);
             }
           }}
-          placeholder="#2FE0AE"
+          placeholder="#88C0D0"
           className="w-24 h-8 px-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
         />
       </div>

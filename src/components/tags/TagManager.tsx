@@ -23,7 +23,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
   const removeTagStore = useAppStore((s) => s.removeTag);
 
   const [newName, setNewName] = useState("");
-  const [newColor, setNewColor] = useState("#2FE0AE");
+  const [newColor, setNewColor] = useState("#88C0D0");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
@@ -49,7 +49,7 @@ export function TagManager({ isOpen, onClose }: TagManagerProps) {
     if (result.success) {
       addTagStore(result.data);
       setNewName("");
-      setNewColor("#2FE0AE");
+      setNewColor("#88C0D0");
       toast.success("Tag criada!");
     } else {
       setCreateError(result.fieldErrors?.name?.[0] || result.error);

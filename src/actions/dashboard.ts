@@ -58,17 +58,17 @@ export interface DashboardData {
   timeline: DashboardTimelinePoint[];
 }
 
-// Paleta para status (sem cor cadastrada pelo usuário)
+// Paleta Nord para status (sem cor cadastrada pelo usuário)
 const STATUS_COLORS: Record<GameStatus | "sem_status", string> = {
-  jogando: "#2FE0AE",
-  zerado: "#22C55E",
-  para_jogar: "#3B82F6",
-  abandonado: "#FF453A",
-  quero_jogar: "#F59E0B",
-  sem_status: "#90919E",
+  jogando: "#A3BE8C",     // nord14 success — em andamento
+  zerado: "#88C0D0",      // nord8 accent — concluído
+  para_jogar: "#5E81AC",  // nord10 interactive — planejado
+  abandonado: "#BF616A",  // nord11 error — desistido
+  quero_jogar: "#EBCB8B", // nord13 warning — wishlist
+  sem_status: "#4C566A",  // nord3 muted
 };
 
-const MISSING_COLOR = "#90919E"; // text-muted
+const MISSING_COLOR = "#4C566A"; // nord3 muted
 
 /**
  * Calcula o range do período atual e do período anterior equivalente.

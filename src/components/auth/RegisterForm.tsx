@@ -17,7 +17,7 @@ function getPasswordStrength(password: string) {
 }
 
 const strengthLabels = ["", "Fraca", "Fraca", "Média", "Forte", "Muito forte"];
-const strengthColors = ["", "#FF453A", "#FF453A", "#EAB308", "#22C55E", "#2FE0AE"];
+const strengthColors = ["", "#BF616A", "#BF616A", "#EBCB8B", "#A3BE8C", "#88C0D0"];
 
 export function RegisterForm() {
   const router = useRouter();
@@ -75,7 +75,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {globalError && (
-        <div className="bg-[#FF453A]/10 border border-[#FF453A]/30 rounded-[16px] px-4 py-3 text-sm text-[#FF453A]">
+        <div className="bg-[var(--color-error)]/10 border border-[var(--color-error)]/30 rounded-[16px] px-4 py-3 text-sm text-[var(--color-error)]">
           {globalError}
         </div>
       )}
@@ -140,7 +140,7 @@ export function RegisterForm() {
             <ul className="space-y-0.5 text-xs">
               <li
                 className={
-                  passwordChecks.length ? "text-[#22C55E]" : "text-[var(--color-text-muted)]"
+                  passwordChecks.length ? "text-[var(--color-success)]" : "text-[var(--color-text-muted)]"
                 }
               >
                 {passwordChecks.length ? "✓" : "○"} Mínimo 8 caracteres
@@ -148,7 +148,7 @@ export function RegisterForm() {
               <li
                 className={
                   passwordChecks.uppercase
-                    ? "text-[#22C55E]"
+                    ? "text-[var(--color-success)]"
                     : "text-[var(--color-text-muted)]"
                 }
               >
@@ -156,7 +156,7 @@ export function RegisterForm() {
               </li>
               <li
                 className={
-                  passwordChecks.number ? "text-[#22C55E]" : "text-[var(--color-text-muted)]"
+                  passwordChecks.number ? "text-[var(--color-success)]" : "text-[var(--color-text-muted)]"
                 }
               >
                 {passwordChecks.number ? "✓" : "○"} Um número

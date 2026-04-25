@@ -6,7 +6,7 @@ export default function LoginPage() {
     <div className="w-full max-w-[440px] bg-[var(--color-bg-surface)] rounded-[24px] shadow-[var(--shadow-medium)] p-10 border border-[var(--color-border)]">
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-[var(--color-text-primary)]">
-          Save<span className="text-[var(--color-accent)]">Point</span>
+          Save<span className="text-[var(--color-interactive)]">Point</span>
         </h1>
         <p className="text-sm text-[var(--color-text-muted)] mt-2">
           Organize sua jornada gamer
@@ -19,7 +19,7 @@ export default function LoginPage() {
         Não tem conta?{" "}
         <Link
           href="/register"
-          className="text-[var(--color-accent)] hover:underline font-medium"
+          className="text-[var(--color-interactive)] hover:underline font-medium"
         >
           Criar conta
         </Link>

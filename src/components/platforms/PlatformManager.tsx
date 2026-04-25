@@ -23,7 +23,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
   const removePlatformStore = useAppStore((s) => s.removePlatform);
 
   const [newName, setNewName] = useState("");
-  const [newColor, setNewColor] = useState("#3B82F6");
+  const [newColor, setNewColor] = useState("#5E81AC");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
@@ -49,7 +49,7 @@ export function PlatformManager({ isOpen, onClose }: PlatformManagerProps) {
     if (result.success) {
       addPlatformStore(result.data);
       setNewName("");
-      setNewColor("#3B82F6");
+      setNewColor("#5E81AC");
       toast.success("Plataforma criada!");
     } else {
       setCreateError(result.fieldErrors?.name?.[0] || result.error);
