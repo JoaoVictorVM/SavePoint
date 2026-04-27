@@ -36,7 +36,8 @@
       "Bash(npx eslint *)",
       "Bash(npm run *)",
       "Bash(gh pr create --base main --head feat/dashboard --title 'feat\\(dashboard\\): add /dashboard page with period filter and charts' --body ' *)",
-      "PowerShell(gh --version)"
+      "PowerShell(gh --version)",
+      "Bash(npx jest *)"
     ]
   }
 }
