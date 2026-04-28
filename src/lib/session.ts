@@ -1,10 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import type { UserSession } from "./types";
+import { SESSION_SECRET_BYTES } from "./secret";
 
-const SECRET = new TextEncoder().encode(
-  process.env.SESSION_SECRET || "dev-secret-change-in-production-min32chars!"
-);
+const SECRET = SESSION_SECRET_BYTES;
 
 const COOKIE_NAME = "savepoint-session";
 const EXPIRATION = "7d";
