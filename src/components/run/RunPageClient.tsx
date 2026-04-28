@@ -57,7 +57,14 @@ export function RunPageClient({
     setUser(initialUser);
     setTags(initialTags);
     setPlatforms(initialPlatforms);
-  }, [initialUser, initialTags, initialPlatforms, setUser, setTags, setPlatforms]);
+  }, [
+    initialUser,
+    initialTags,
+    initialPlatforms,
+    setUser,
+    setTags,
+    setPlatforms,
+  ]);
 
   function applyFilters(): GameWithTags[] {
     let pool = [...initialGames];
@@ -70,10 +77,14 @@ export function RunPageClient({
           pool = pool.filter((g) => g.isFavorite);
           break;
         case "plataforma":
-          pool = pool.filter((g) => g.platformId && pair.values.includes(g.platformId));
+          pool = pool.filter(
+            (g) => g.platformId && pair.values.includes(g.platformId),
+          );
           break;
         case "tags":
-          pool = pool.filter((g) => g.tags.some((t) => pair.values.includes(t.id)));
+          pool = pool.filter((g) =>
+            g.tags.some((t) => pair.values.includes(t.id)),
+          );
           break;
         case "status":
           pool = pool.filter((g) => g.status && pair.values.includes(g.status));
@@ -135,13 +146,25 @@ export function RunPageClient({
       onOpenTagManager={openTagManager}
       onOpenPlatformManager={openPlatformManager}
     >
-      <div className="p-6 md:p-8 max-w-4xl mx-auto w-full">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-8">Run</h1>
+      <div className="p-6 md:p-8">
+        {/* Header */}
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+              Run
+            </h1>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">
+              Sorteie sua próxima jogatina.
+            </p>
+          </div>
+        </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Result area */}
           <div className="flex flex-col items-center gap-4">
-            <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide self-start">Resultado</h2>
+            <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide self-start">
+              Resultado
+            </h2>
 
             {isRolling ? (
               <RollAnimation />
@@ -173,13 +196,25 @@ export function RunPageClient({
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-accent)] transition-colors">
                     {result.title}
                   </p>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Clique para ver detalhes →</p>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    Clique para ver detalhes →
+                  </p>
                 </div>
               </Link>
             ) : noResults ? (
               <div className="w-[220px] h-[300px] rounded-[16px] border border-dashed border-[var(--color-border)] flex flex-col items-center justify-center gap-3 text-center p-6">
-                <svg className="w-10 h-10 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                <svg
+                  className="w-10 h-10 text-[var(--color-text-muted)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                  />
                 </svg>
                 <p className="text-sm text-[var(--color-text-muted)]">
                   Nenhum jogo corresponde aos filtros selecionados.
@@ -187,8 +222,18 @@ export function RunPageClient({
               </div>
             ) : (
               <div className="w-[220px] h-[300px] rounded-[16px] border border-dashed border-[var(--color-border)] flex flex-col items-center justify-center gap-3 text-center p-6">
-                <svg className="w-10 h-10 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 00.658-.663 48.422 48.422 0 00-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 01-.61-.58v0z" />
+                <svg
+                  className="w-10 h-10 text-[var(--color-text-muted)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 00.658-.663 48.422 48.422 0 00-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 01-.61-.58v0z"
+                  />
                 </svg>
                 <p className="text-sm text-[var(--color-text-muted)]">
                   Para começar a sua próxima Run, clique em Sortear.
@@ -197,14 +242,20 @@ export function RunPageClient({
             )}
 
             {/* Sortear button */}
-            <Button onClick={handleRoll} disabled={isRolling} className="w-[220px]">
+            <Button
+              onClick={handleRoll}
+              disabled={isRolling}
+              className="w-[220px]"
+            >
               {isRolling ? "Sorteando..." : "Sortear"}
             </Button>
           </div>
 
           {/* Right: Filters area */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide">Filtros</h2>
+            <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+              Filtros
+            </h2>
 
             {filterPairs.map((pair) => (
               <FilterPairRow
@@ -230,7 +281,10 @@ export function RunPageClient({
       </div>
 
       <TagManager isOpen={isTagManagerOpen} onClose={closeTagManager} />
-      <PlatformManager isOpen={isPlatformManagerOpen} onClose={closePlatformManager} />
+      <PlatformManager
+        isOpen={isPlatformManagerOpen}
+        onClose={closePlatformManager}
+      />
     </AppShell>
   );
 }

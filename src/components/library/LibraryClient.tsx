@@ -122,12 +122,22 @@ export function LibraryClient({
       onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8">
-        {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-          <SearchBar />
-          <div className="ml-auto">
-            <Button onClick={openAddGameModal}>+ Novo Jogo</Button>
+        {/* Header */}
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+              Library
+            </h1>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">
+              Sua coleção de jogos
+            </p>
           </div>
+          <Button onClick={openAddGameModal}>+ Novo Jogo</Button>
+        </header>
+
+        {/* Toolbar (search) */}
+        <div className="mb-6">
+          <SearchBar />
         </div>
 
         {/* Filter bar */}

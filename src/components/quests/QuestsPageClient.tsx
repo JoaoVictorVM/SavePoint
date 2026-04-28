@@ -115,15 +115,25 @@ export function QuestsPageClient({
       onOpenTagManager={openTagManager}
       onOpenPlatformManager={openPlatformManager}
     >
-      <div className="p-6 md:p-8 max-w-3xl mx-auto w-full">
+      <div className="p-6 md:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Quests</h1>
-            <GoldDisplay amount={user?.goldBalance ?? initialUser.goldBalance} animate />
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+              Quests
+            </h1>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">
+              Acompanhe suas missões e ganhe gold
+            </p>
           </div>
-          <Button onClick={() => setIsAddOpen(true)}>+ Nova Quest</Button>
-        </div>
+          <div className="flex items-center gap-4">
+            <GoldDisplay
+              amount={user?.goldBalance ?? initialUser.goldBalance}
+              animate
+            />
+            <Button onClick={() => setIsAddOpen(true)}>+ Nova Quest</Button>
+          </div>
+        </header>
 
         {/* Quest groups */}
         {groups.length > 0 ? (

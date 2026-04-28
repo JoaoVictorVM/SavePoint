@@ -39,7 +39,16 @@ export function JourneyPageClient({
       onOpenPlatformManager={openPlatformManager}
     >
       <div className="p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Journey</h1>
+        {/* Header */}
+        <header className="mb-6">
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+            Journey
+          </h1>
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
+            Organize seus jogos por etapa
+          </p>
+        </header>
+
         <KanbanBoard initialData={initialData} />
       </div>
 
