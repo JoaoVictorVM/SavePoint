@@ -5,6 +5,7 @@ import {
   integer,
   timestamp,
   unique,
+  index,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { games } from "./games";
@@ -23,7 +24,11 @@ export const journeyItems = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [unique("journey_items_game_id_unique").on(table.gameId)]
+  (table) => [
+    unique("journey_items_game_id_unique").on(table.gameId),
+    // Filtra/ordena por coluna + position no kanban
+    index("journey_items_column_position_idx").on(table.column, table.position),
+  ]
 );
 
 export type JourneyItem = typeof journeyItems.$inferSelect;

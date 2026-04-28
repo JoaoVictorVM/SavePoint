@@ -37,7 +37,9 @@
       "Bash(npm run *)",
       "Bash(gh pr create --base main --head feat/dashboard --title 'feat\\(dashboard\\): add /dashboard page with period filter and charts' --body ' *)",
       "PowerShell(gh --version)",
-      "Bash(npx jest *)"
+      "Bash(npx jest *)",
+      "Bash(rm drizzle/0000_add_performance_indexes.sql)",
+      "Bash(rm -rf drizzle/meta)"
     ]
   }
 }

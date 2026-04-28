@@ -1,6 +1,7 @@
 "use server";
 
 import { eq, and, sql } from "drizzle-orm";
+import { unstable_cache, updateTag as updateCacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { tags } from "@/schema/tags";
 import { gameTags } from "@/schema/gameTags";
@@ -15,13 +16,26 @@ async function requireAuth() {
   return session;
 }
 
+function tagsCacheKey(userId: string): string {
+  return `user-tags-${userId}`;
+}
+
 export async function getUserTags(): Promise<Tag[]> {
   const session = await requireAuth();
-  return db
-    .select()
-    .from(tags)
-    .where(eq(tags.userId, session.id))
-    .orderBy(tags.createdAt);
+
+  // Cache por usuário; invalidado em cada mutação via revalidateTag.
+  const cached = unstable_cache(
+    async (userId: string): Promise<Tag[]> =>
+      db
+        .select()
+        .from(tags)
+        .where(eq(tags.userId, userId))
+        .orderBy(tags.createdAt),
+    [`user-tags-${session.id}`],
+    { tags: [tagsCacheKey(session.id)], revalidate: 3600 }
+  );
+
+  return cached(session.id);
 }
 
 export async function createTag(
@@ -72,6 +86,7 @@ export async function createTag(
     .values({ userId: session.id, name, color })
     .returning();
 
+  updateCacheTag(tagsCacheKey(session.id));
   return { success: true, data: newTag };
 }
 
@@ -126,6 +141,7 @@ export async function updateTag(
     .where(eq(tags.id, tagId))
     .returning();
 
+  updateCacheTag(tagsCacheKey(session.id));
   return { success: true, data: updated };
 }
 
@@ -150,6 +166,7 @@ export async function deleteTag(
 
   await db.delete(tags).where(eq(tags.id, tagId));
 
+  updateCacheTag(tagsCacheKey(session.id));
   return { success: true, data: { affectedGames: count } };
 }
 

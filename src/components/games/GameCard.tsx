@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { TagPill } from "@/components/tags/TagPill";
 import type { GameWithTags } from "@/lib/types";
 
@@ -13,7 +13,7 @@ interface GameCardProps {
   onDelete: (gameId: string) => void;
 }
 
-export function GameCard({
+function GameCardImpl({
   game,
   onToggleFavorite,
   onEdit,
@@ -106,3 +106,5 @@ export function GameCard({
     </div>
   );
 }
+
+export const GameCard = memo(GameCardImpl);

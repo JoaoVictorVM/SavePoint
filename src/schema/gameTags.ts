@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, unique } from "drizzle-orm/pg-core";
+import { pgTable, uuid, timestamp, unique, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { games } from "./games";
 import { tags } from "./tags";
@@ -17,7 +17,12 @@ export const gameTags = pgTable(
       .references(() => tags.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [unique().on(table.gameId, table.tagId)]
+  (table) => [
+    // (gameId, tagId) já cobre lookups por gameId.
+    // Este índice cobre o caminho inverso (filtros por tagId — count em deleteTag)
+    unique().on(table.gameId, table.tagId),
+    index("game_tags_tag_id_idx").on(table.tagId),
+  ]
 );
 
 export type GameTag = typeof gameTags.$inferSelect;

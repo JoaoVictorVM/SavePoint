@@ -1,6 +1,7 @@
 "use server";
 
 import { eq, and, sql } from "drizzle-orm";
+import { unstable_cache, updateTag } from "next/cache";
 import { db } from "@/lib/db";
 import { platforms } from "@/schema/platforms";
 import { getSession } from "@/lib/session";
@@ -14,13 +15,25 @@ async function requireAuth() {
   return session;
 }
 
+function platformsCacheKey(userId: string): string {
+  return `user-platforms-${userId}`;
+}
+
 export async function getUserPlatforms(): Promise<Platform[]> {
   const session = await requireAuth();
-  return db
-    .select()
-    .from(platforms)
-    .where(eq(platforms.userId, session.id))
-    .orderBy(platforms.createdAt);
+
+  const cached = unstable_cache(
+    async (userId: string): Promise<Platform[]> =>
+      db
+        .select()
+        .from(platforms)
+        .where(eq(platforms.userId, userId))
+        .orderBy(platforms.createdAt),
+    [`user-platforms-${session.id}`],
+    { tags: [platformsCacheKey(session.id)], revalidate: 3600 }
+  );
+
+  return cached(session.id);
 }
 
 export async function createPlatform(
@@ -71,6 +84,7 @@ export async function createPlatform(
     .values({ userId: session.id, name, color })
     .returning();
 
+  updateTag(platformsCacheKey(session.id));
   return { success: true, data: newPlatform };
 }
 
@@ -125,6 +139,7 @@ export async function updatePlatform(
     .where(eq(platforms.id, platformId))
     .returning();
 
+  updateTag(platformsCacheKey(session.id));
   return { success: true, data: updated };
 }
 
@@ -143,5 +158,6 @@ export async function deletePlatform(
 
   await db.delete(platforms).where(eq(platforms.id, platformId));
 
+  updateTag(platformsCacheKey(session.id));
   return { success: true, data: undefined };
 }

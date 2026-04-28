@@ -175,75 +175,85 @@ export async function getDashboardData(
 
   const { start, end, previousStart, previousEnd } = computeRanges(period);
 
-  // ---- 1. Jogos adicionados no período (e no anterior, para futuras comparações) ----
-  const userGamesInPeriod = await db
-    .select({
-      id: games.id,
-      status: games.status,
-      platformId: games.platformId,
-      isFavorite: games.isFavorite,
-      createdAt: games.createdAt,
-      rating: games.rating,
-      review: games.review,
-    })
-    .from(games)
-    .where(
-      and(
-        eq(games.userId, session.id),
-        between(games.createdAt, start, end)
-      )
-    );
+  // ---- Paraleliza as 5 queries independentes ----
+  const [
+    userGamesInPeriod,
+    userGamesPrev,
+    goldRows,
+    goldPrevRows,
+    userPlatforms,
+  ] = await Promise.all([
+    db
+      .select({
+        id: games.id,
+        status: games.status,
+        platformId: games.platformId,
+        isFavorite: games.isFavorite,
+        createdAt: games.createdAt,
+        rating: games.rating,
+        review: games.review,
+      })
+      .from(games)
+      .where(
+        and(
+          eq(games.userId, session.id),
+          between(games.createdAt, start, end)
+        )
+      ),
+    db
+      .select({ status: games.status })
+      .from(games)
+      .where(
+        and(
+          eq(games.userId, session.id),
+          between(games.createdAt, previousStart, previousEnd)
+        )
+      ),
+    db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(quests)
+      .innerJoin(games, eq(quests.gameId, games.id))
+      .where(
+        and(
+          eq(games.userId, session.id),
+          eq(quests.completed, true),
+          gte(quests.completedAt, start),
+          lte(quests.completedAt, end)
+        )
+      ),
+    db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(quests)
+      .innerJoin(games, eq(quests.gameId, games.id))
+      .where(
+        and(
+          eq(games.userId, session.id),
+          eq(quests.completed, true),
+          gte(quests.completedAt, previousStart),
+          lte(quests.completedAt, previousEnd)
+        )
+      ),
+    db
+      .select({ id: platforms.id, name: platforms.name, color: platforms.color })
+      .from(platforms)
+      .where(eq(platforms.userId, session.id)),
+  ]);
 
   const totalGamesAdded = userGamesInPeriod.length;
   const favoritesAdded = userGamesInPeriod.filter((g) => g.isFavorite).length;
 
-  // ---- 2. Taxa de conclusão (zerados no período / total no período) ----
+  // Taxa de conclusão (zerados / total) no período atual e anterior
   const zeradosCount = userGamesInPeriod.filter((g) => g.status === "zerado").length;
   const completionRate =
     totalGamesAdded > 0 ? Math.round((zeradosCount / totalGamesAdded) * 100) : 0;
 
-  // Período anterior (para comparação — não exibido, mas disponível)
-  const userGamesPrev = await db
-    .select({ status: games.status })
-    .from(games)
-    .where(
-      and(
-        eq(games.userId, session.id),
-        between(games.createdAt, previousStart, previousEnd)
-      )
-    );
   const prevTotal = userGamesPrev.length;
   const prevZerados = userGamesPrev.filter((g) => g.status === "zerado").length;
   const completionRatePrev =
     prevTotal > 0 ? Math.round((prevZerados / prevTotal) * 100) : 0;
 
-  // ---- 3. Gold ganho (1 por quest concluída) ----
-  const goldRows = await db
-    .select({ count: sql<number>`COUNT(*)::int` })
-    .from(quests)
-    .innerJoin(games, eq(quests.gameId, games.id))
-    .where(
-      and(
-        eq(games.userId, session.id),
-        eq(quests.completed, true),
-        gte(quests.completedAt, start),
-        lte(quests.completedAt, end)
-      )
-    );
+  // Gold (1 por quest concluída)
   const goldEarned = Number(goldRows[0]?.count ?? 0);
-
-  const goldPrevRows = await db
-    .select({ count: sql<number>`COUNT(*)::int` })
-    .from(quests)
-    .innerJoin(games, eq(quests.gameId, games.id))
-    .where(
-      and(
-        eq(games.userId, session.id),
-        eq(quests.completed, true),
-        gte(quests.completedAt, previousStart),
-        lte(quests.completedAt, previousEnd)
-      )
-    );
   const goldEarnedPrev = Number(goldPrevRows[0]?.count ?? 0);
 
   const goldChangePercent = percentChange(goldEarned, goldEarnedPrev);
@@ -265,11 +275,7 @@ export async function getDashboardData(
     return { label, value, color };
   });
 
-  // ---- 5. Breakdown por Plataforma ----
-  const userPlatforms = await db
-    .select({ id: platforms.id, name: platforms.name, color: platforms.color })
-    .from(platforms)
-    .where(eq(platforms.userId, session.id));
+  // ---- 5. Breakdown por Plataforma (já paralelizado acima) ----
   const platformById = new Map(userPlatforms.map((p) => [p.id, p]));
 
   const platformMap = new Map<string | null, number>();

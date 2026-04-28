@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { toggleQuestComplete, deleteQuest } from "@/actions/quests";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -14,7 +14,7 @@ interface QuestItemProps {
   onEdit: (quest: Quest) => void;
 }
 
-export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProps) {
+function QuestItemImpl({ quest, onToggled, onDeleted, onEdit }: QuestItemProps) {
   const [isToggling, setIsToggling] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -139,3 +139,5 @@ export function QuestItem({ quest, onToggled, onDeleted, onEdit }: QuestItemProp
     </>
   );
 }
+
+export const QuestItem = memo(QuestItemImpl);

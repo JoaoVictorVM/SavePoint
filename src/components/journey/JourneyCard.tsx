@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TagPill } from "@/components/tags/TagPill";
@@ -12,7 +12,7 @@ interface JourneyCardProps {
   onRemove: (journeyItemId: string) => void;
 }
 
-export function JourneyCard({ card, onRemove }: JourneyCardProps) {
+function JourneyCardImpl({ card, onRemove }: JourneyCardProps) {
   const [imgError, setImgError] = useState(false);
 
   const {
@@ -86,3 +86,5 @@ export function JourneyCard({ card, onRemove }: JourneyCardProps) {
     </div>
   );
 }
+
+export const JourneyCard = memo(JourneyCardImpl);

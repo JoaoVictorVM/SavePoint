@@ -25,8 +25,8 @@ async function requireAuth() {
 export async function getJourneyData(): Promise<JourneyData> {
   const session = await requireAuth();
 
-  // Fetch all journey items for user's games
-  const items = await db
+  // Single query: journey_items + games + (left join) gameTags + tags
+  const rows = await db
     .select({
       journeyItemId: journeyItems.id,
       gameId: journeyItems.gameId,
@@ -34,64 +34,54 @@ export async function getJourneyData(): Promise<JourneyData> {
       position: journeyItems.position,
       title: games.title,
       coverImageUrl: games.coverImageUrl,
-    })
-    .from(journeyItems)
-    .innerJoin(games, eq(journeyItems.gameId, games.id))
-    .where(eq(games.userId, session.id))
-    .orderBy(journeyItems.position);
-
-  if (items.length === 0) {
-    const empty: JourneyData = {} as JourneyData;
-    for (const col of JOURNEY_COLUMNS) {
-      empty[col] = [];
-    }
-    return empty;
-  }
-
-  // Fetch tags for all games in journey
-  const gameIds = items.map((i) => i.gameId);
-  const gameTagRows = await db
-    .select({
-      gameId: gameTags.gameId,
       tagId: tags.id,
       tagName: tags.name,
       tagColor: tags.color,
     })
-    .from(gameTags)
-    .innerJoin(tags, eq(gameTags.tagId, tags.id))
-    .where(inArray(gameTags.gameId, gameIds));
+    .from(journeyItems)
+    .innerJoin(games, eq(journeyItems.gameId, games.id))
+    .leftJoin(gameTags, eq(games.id, gameTags.gameId))
+    .leftJoin(tags, eq(gameTags.tagId, tags.id))
+    .where(eq(games.userId, session.id))
+    .orderBy(journeyItems.position);
 
-  const tagsByGame = new Map<string, Tag[]>();
-  for (const row of gameTagRows) {
-    const arr = tagsByGame.get(row.gameId) || [];
-    arr.push({
-      id: row.tagId,
-      userId: session.id,
-      name: row.tagName,
-      color: row.tagColor,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    tagsByGame.set(row.gameId, arr);
-  }
-
+  // Inicializa estrutura com 5 colunas vazias
   const data: JourneyData = {} as JourneyData;
   for (const col of JOURNEY_COLUMNS) {
     data[col] = [];
   }
 
-  for (const item of items) {
-    const col = item.column as JourneyColumnId;
-    if (JOURNEY_COLUMNS.includes(col)) {
-      data[col].push({
-        journeyItemId: item.journeyItemId,
-        gameId: item.gameId,
-        title: item.title,
-        coverImageUrl: item.coverImageUrl,
-        tags: tagsByGame.get(item.gameId) || [],
+  if (rows.length === 0) return data;
+
+  // Agrupa por journeyItemId, acumulando tags
+  const itemMap = new Map<string, JourneyGameCard>();
+
+  for (const r of rows) {
+    let card = itemMap.get(r.journeyItemId);
+    if (!card) {
+      const col = r.column as JourneyColumnId;
+      if (!JOURNEY_COLUMNS.includes(col)) continue;
+      card = {
+        journeyItemId: r.journeyItemId,
+        gameId: r.gameId,
+        title: r.title,
+        coverImageUrl: r.coverImageUrl,
+        tags: [],
         column: col,
-        position: item.position,
-      });
+        position: r.position,
+      };
+      itemMap.set(r.journeyItemId, card);
+      data[col].push(card);
+    }
+    if (r.tagId && r.tagName && r.tagColor) {
+      card.tags.push({
+        id: r.tagId,
+        userId: session.id,
+        name: r.tagName,
+        color: r.tagColor,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as Tag);
     }
   }
 

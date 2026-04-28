@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import { AppShell } from "@/components/layout/AppShell";
 import { SearchBar } from "@/components/library/SearchBar";
@@ -99,16 +99,20 @@ export function LibraryClient({
     ? games.find((g) => g.id === deletingGameId)
     : null;
 
-  async function handleToggleFavorite(gameId: string) {
-    // Optimistic
-    toggleGameFavorite(gameId);
+  // useCallback estabiliza a referência para que GameCard (memo) não re-renderize
+  const handleToggleFavorite = useCallback(
+    async (gameId: string) => {
+      // Optimistic
+      toggleGameFavorite(gameId);
 
-    const result = await toggleFavorite(gameId);
-    if (!result.success) {
-      toggleGameFavorite(gameId); // Revert
-      toast.error("Erro ao atualizar favorito");
-    }
-  }
+      const result = await toggleFavorite(gameId);
+      if (!result.success) {
+        toggleGameFavorite(gameId); // Revert
+        toast.error("Erro ao atualizar favorito");
+      }
+    },
+    [toggleGameFavorite]
+  );
 
   return (
     <AppShell

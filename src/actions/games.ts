@@ -211,44 +211,69 @@ export async function toggleFavorite(
 export async function getGames(): Promise<GameWithTags[]> {
   const session = await requireAuth();
 
-  const userGames = await db
-    .select()
-    .from(games)
-    .where(eq(games.userId, session.id))
-    .orderBy(sql`${games.isFavorite} DESC, ${games.createdAt} DESC`);
-
-  if (userGames.length === 0) return [];
-
-  const gameIds = userGames.map((g) => g.id);
-
-  // Fetch tags for all games
-  const gameTagRows = await db
+  // Single LEFT JOIN: games + tags in one round-trip.
+  // Cada jogo aparece N vezes (uma por tag) ou 1 vez se não tem tag (LEFT JOIN).
+  const rows = await db
     .select({
-      gameId: gameTags.gameId,
+      // game fields (todos os necessários para GameWithTags)
+      id: games.id,
+      userId: games.userId,
+      title: games.title,
+      coverImageUrl: games.coverImageUrl,
+      isFavorite: games.isFavorite,
+      platformId: games.platformId,
+      rating: games.rating,
+      review: games.review,
+      status: games.status,
+      createdAt: games.createdAt,
+      updatedAt: games.updatedAt,
+      // tag fields (nullable — LEFT JOIN)
       tagId: tags.id,
       tagName: tags.name,
       tagColor: tags.color,
+      tagCreatedAt: tags.createdAt,
+      tagUpdatedAt: tags.updatedAt,
     })
-    .from(gameTags)
-    .innerJoin(tags, eq(gameTags.tagId, tags.id))
-    .where(sql`${gameTags.gameId} IN ${gameIds}`);
+    .from(games)
+    .leftJoin(gameTags, eq(games.id, gameTags.gameId))
+    .leftJoin(tags, eq(gameTags.tagId, tags.id))
+    .where(eq(games.userId, session.id))
+    .orderBy(sql`${games.isFavorite} DESC, ${games.createdAt} DESC`);
 
-  const tagsByGame = new Map<string, Tag[]>();
-  for (const row of gameTagRows) {
-    const arr = tagsByGame.get(row.gameId) || [];
-    arr.push({
-      id: row.tagId,
-      userId: session.id,
-      name: row.tagName,
-      color: row.tagColor,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    tagsByGame.set(row.gameId, arr);
+  if (rows.length === 0) return [];
+
+  // Agrupa as linhas por gameId
+  const gameMap = new Map<string, GameWithTags>();
+  for (const r of rows) {
+    let game = gameMap.get(r.id);
+    if (!game) {
+      game = {
+        id: r.id,
+        userId: r.userId,
+        title: r.title,
+        coverImageUrl: r.coverImageUrl,
+        isFavorite: r.isFavorite,
+        platformId: r.platformId,
+        rating: r.rating,
+        review: r.review,
+        status: r.status,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+        tags: [],
+      };
+      gameMap.set(r.id, game);
+    }
+    if (r.tagId && r.tagName && r.tagColor) {
+      game.tags.push({
+        id: r.tagId,
+        userId: session.id,
+        name: r.tagName,
+        color: r.tagColor,
+        createdAt: r.tagCreatedAt ?? new Date(),
+        updatedAt: r.tagUpdatedAt ?? new Date(),
+      } as Tag);
+    }
   }
 
-  return userGames.map((game) => ({
-    ...game,
-    tags: tagsByGame.get(game.id) || [],
-  }));
+  return Array.from(gameMap.values());
 }

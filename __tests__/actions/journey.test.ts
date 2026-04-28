@@ -34,7 +34,7 @@ describe("getJourneyData", () => {
     Object.values(result).forEach((col) => expect(col).toEqual([]));
   });
 
-  it("agrupa itens por coluna corretamente", async () => {
+  it("agrupa itens por coluna corretamente (single LEFT JOIN)", async () => {
     db.orderBy.mockResolvedValueOnce([
       {
         journeyItemId: "j1",
@@ -43,15 +43,17 @@ describe("getJourneyData", () => {
         position: 0,
         title: "Hollow Knight",
         coverImageUrl: null,
+        tagId: null,
+        tagName: null,
+        tagColor: null,
       },
     ]);
-    // 1ª where (userGames) → chain; 2ª where (tags fetch) → terminal []
-    db.where.mockReturnValueOnce(db).mockResolvedValueOnce([]);
 
     const result = await getJourneyData();
 
     expect(result.para_jogar).toHaveLength(1);
     expect(result.para_jogar[0].title).toBe("Hollow Knight");
+    expect(result.para_jogar[0].tags).toEqual([]);
   });
 });
 

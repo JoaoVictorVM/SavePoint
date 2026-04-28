@@ -237,26 +237,36 @@ describe("toggleFavorite", () => {
 // ───────────────────────────────────────────────────────────
 describe("getGames", () => {
   it("retorna lista vazia quando o usuário não tem jogos", async () => {
-    db.orderBy.mockResolvedValueOnce([]); // sem jogos
+    // Single LEFT JOIN: terminal é orderBy
+    db.orderBy.mockResolvedValueOnce([]);
 
     const result = await getGames();
 
     expect(result).toEqual([]);
   });
 
-  it("retorna jogos com tags agrupadas corretamente", async () => {
-    // Sequência: select-from-where-orderBy (userGames) → select-from-innerJoin-where (tagRows)
-    db.orderBy.mockResolvedValueOnce([mockGame]);
-    db.where
-      .mockReturnValueOnce(db) // 1ª chamada: chain (antes de orderBy)
-      .mockResolvedValueOnce([
-        {
-          gameId: mockGame.id,
-          tagId: mockTags[0].id,
-          tagName: mockTags[0].name,
-          tagColor: mockTags[0].color,
-        },
-      ]); // 2ª chamada: terminal (tagRows)
+  it("retorna jogos com tags agrupadas corretamente (single LEFT JOIN)", async () => {
+    // Linhas retornadas pelo LEFT JOIN (1 jogo × 1 tag = 1 linha aqui)
+    db.orderBy.mockResolvedValueOnce([
+      {
+        id: mockGame.id,
+        userId: mockGame.userId,
+        title: mockGame.title,
+        coverImageUrl: mockGame.coverImageUrl,
+        isFavorite: mockGame.isFavorite,
+        platformId: mockGame.platformId,
+        rating: mockGame.rating,
+        review: mockGame.review,
+        status: mockGame.status,
+        createdAt: mockGame.createdAt,
+        updatedAt: mockGame.updatedAt,
+        tagId: mockTags[0].id,
+        tagName: mockTags[0].name,
+        tagColor: mockTags[0].color,
+        tagCreatedAt: mockTags[0].createdAt,
+        tagUpdatedAt: mockTags[0].updatedAt,
+      },
+    ]);
 
     const result = await getGames();
 
@@ -264,5 +274,77 @@ describe("getGames", () => {
     expect(result[0].id).toBe(mockGame.id);
     expect(result[0].tags).toHaveLength(1);
     expect(result[0].tags[0].name).toBe("RPG");
+  });
+
+  it("agrupa múltiplas linhas do mesmo jogo (várias tags) em um único objeto", async () => {
+    db.orderBy.mockResolvedValueOnce([
+      {
+        id: mockGame.id,
+        userId: mockGame.userId,
+        title: mockGame.title,
+        coverImageUrl: mockGame.coverImageUrl,
+        isFavorite: mockGame.isFavorite,
+        platformId: mockGame.platformId,
+        rating: mockGame.rating,
+        review: mockGame.review,
+        status: mockGame.status,
+        createdAt: mockGame.createdAt,
+        updatedAt: mockGame.updatedAt,
+        tagId: mockTags[0].id,
+        tagName: mockTags[0].name,
+        tagColor: mockTags[0].color,
+        tagCreatedAt: mockTags[0].createdAt,
+        tagUpdatedAt: mockTags[0].updatedAt,
+      },
+      {
+        id: mockGame.id,
+        userId: mockGame.userId,
+        title: mockGame.title,
+        coverImageUrl: mockGame.coverImageUrl,
+        isFavorite: mockGame.isFavorite,
+        platformId: mockGame.platformId,
+        rating: mockGame.rating,
+        review: mockGame.review,
+        status: mockGame.status,
+        createdAt: mockGame.createdAt,
+        updatedAt: mockGame.updatedAt,
+        tagId: mockTags[1].id,
+        tagName: mockTags[1].name,
+        tagColor: mockTags[1].color,
+        tagCreatedAt: mockTags[1].createdAt,
+        tagUpdatedAt: mockTags[1].updatedAt,
+      },
+    ]);
+
+    const result = await getGames();
+    expect(result).toHaveLength(1);
+    expect(result[0].tags).toHaveLength(2);
+  });
+
+  it("inclui jogos sem tags (LEFT JOIN com NULL nos campos de tag)", async () => {
+    db.orderBy.mockResolvedValueOnce([
+      {
+        id: mockGame.id,
+        userId: mockGame.userId,
+        title: mockGame.title,
+        coverImageUrl: mockGame.coverImageUrl,
+        isFavorite: mockGame.isFavorite,
+        platformId: mockGame.platformId,
+        rating: mockGame.rating,
+        review: mockGame.review,
+        status: mockGame.status,
+        createdAt: mockGame.createdAt,
+        updatedAt: mockGame.updatedAt,
+        tagId: null,
+        tagName: null,
+        tagColor: null,
+        tagCreatedAt: null,
+        tagUpdatedAt: null,
+      },
+    ]);
+
+    const result = await getGames();
+    expect(result).toHaveLength(1);
+    expect(result[0].tags).toEqual([]);
   });
 });
